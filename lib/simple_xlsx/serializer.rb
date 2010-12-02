@@ -1,10 +1,19 @@
+# Naview
+# - Adapted to use Tempfile and ZipOutputStream rather than ZipFile
+# - Replaced @zip.get_output_stream with @zip.put_next_entry
+# - Commented out @zip.mkdir
+# 
+# source: http://github.com/harvesthq/simple_xlsx_writer
+# see also: http://info.michael-simons.eu/2008/01/21/using-rubyzip-to-create-zip-files-on-the-fly/
+
 module SimpleXlsx
 
 class Serializer
 
-  def initialize to
-    @to = to
-    Zip::ZipFile.open(to, Zip::ZipFile::CREATE) do |zip|
+  def initialize tempfile
+#    @to = to
+#    Zip::ZipFile.open(to, Zip::ZipFile::CREATE) do |zip|
+    Zip::ZipOutputStream.open(tempfile.path) do |zip|
       @zip = zip
       add_doc_props
       add_worksheets_directory
@@ -19,7 +28,9 @@ class Serializer
   end
 
   def add_workbook_part
-    @zip.get_output_stream "xl/workbook.xml" do |f|
+    @zip.put_next_entry("xl/workbook.xml")
+    f = @zip
+#    @zip.get_output_stream "xl/workbook.xml" do |f|
       f.puts <<-ends
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
@@ -30,22 +41,26 @@ ends
         f.puts "<sheet name=\"#{sheet.name}\" sheetId=\"#{ndx + 1}\" r:id=\"#{sheet.rid}\"/>"
       end
       f.puts "</sheets></workbook>"
-    end
+#    end
   end
 
   def add_worksheets_directory
-    @zip.mkdir "xl"
-    @zip.mkdir "xl/worksheets"
+#    @zip.mkdir "xl"
+#    @zip.mkdir "xl/worksheets"
   end
 
   def open_stream_for_sheet ndx
-    @zip.get_output_stream "xl/worksheets/sheet#{ndx + 1}.xml" do |f|
-      yield f
-    end
+    @zip.put_next_entry("xl/worksheets/sheet#{ndx + 1}.xml")
+    @zip    # return this stream
+#    @zip.get_output_stream "xl/worksheets/sheet#{ndx + 1}.xml" do |f|
+#      yield f
+#    end
   end
 
   def add_content_types
-    @zip.get_output_stream "[Content_Types].xml" do |f|
+    @zip.put_next_entry("[Content_Types].xml")
+    f = @zip
+#    @zip.get_output_stream "[Content_Types].xml" do |f|
       f.puts '<?xml version="1.0" encoding="UTF-8"?>'
       f.puts '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
       f.puts <<-ends
@@ -63,12 +78,14 @@ ends
       end
       f.puts '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>'
       f.puts "</Types>"
-    end
+#    end
   end
 
   def add_workbook_relationship_part
-    @zip.mkdir "xl/_rels"
-    @zip.get_output_stream "xl/_rels/workbook.xml.rels" do |f|
+    @zip.put_next_entry("xl/_rels/workbook.xml.rels")
+    f = @zip
+#    @zip.mkdir "xl/_rels"
+#    @zip.get_output_stream "xl/_rels/workbook.xml.rels" do |f|
       f.puts <<-ends
 <?xml version="1.0" encoding="UTF-8"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
@@ -83,12 +100,14 @@ ends
         f.puts '<Relationship Id="rId#{cnt += 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings" Target="xl/sharedStrings.xml"/>'
       end
       f.puts "</Relationships>"
-    end
+#    end
   end
 
   def add_relationship_part
-    @zip.mkdir "_rels"
-    @zip.get_output_stream "_rels/.rels" do |f|
+    @zip.put_next_entry("_rels/.rels")
+    f = @zip
+#    @zip.mkdir "_rels"
+#    @zip.get_output_stream "_rels/.rels" do |f|
       f.puts <<-ends
 <?xml version="1.0" encoding="UTF-8"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
@@ -97,32 +116,39 @@ ends
   <Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/>
 ends
       f.puts "</Relationships>"
-    end
+#    end
   end
 
   def add_doc_props
-    @zip.mkdir "docProps"
-    @zip.get_output_stream "docProps/core.xml" do |f|
+    @zip.put_next_entry("docProps/core.xml")
+    f = @zip
+#    @zip.mkdir "docProps"
+#    @zip.get_output_stream "docProps/core.xml" do |f|
+      # JP 02/09/2010 bug fix, replaced 2010-07-20T14:30:58.00Z with #{Time.now.utc.xmlschema}
       f.puts <<-ends
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-   <dcterms:created xsi:type="dcterms:W3CDTF">2010-07-20T14:30:58.00Z</dcterms:created>
+   <dcterms:created xsi:type="dcterms:W3CDTF">#{Time.now.utc.xmlschema}</dcterms:created>
    <cp:revision>0</cp:revision>
 </cp:coreProperties>
 ends
-    end
-    @zip.get_output_stream "docProps/app.xml" do |f|
+#    end
+    @zip.put_next_entry("docProps/app.xml")
+    f = @zip
+#    @zip.get_output_stream "docProps/app.xml" do |f|
       f.puts <<-ends
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes">
   <TotalTime>0</TotalTime>
 </Properties>
 ends
-    end
+#    end
   end
 
   def add_styles
-    @zip.get_output_stream "xl/styles.xml" do |f|
+    @zip.put_next_entry("xl/styles.xml")
+    f = @zip
+#    @zip.get_output_stream "xl/styles.xml" do |f|
       f.puts <<-ends
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
@@ -187,7 +213,7 @@ ends
 </cellStyles>
 </styleSheet>
 ends
-    end
+#    end
   end
 
 end
