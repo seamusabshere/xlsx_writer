@@ -8,14 +8,14 @@ module SimpleXlsx
 
     def initialize document, name, stream, &block
       @document = document
-      @stream =  stream
+      @stream = stream
       @name = name.to_xs
       @row_ndx = 1
       @stream.write <<-ends
-  <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-  <worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
-  <sheetData>
-  ends
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+<sheetData>
+ends
       if block_given?
         yield self
       end
