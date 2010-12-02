@@ -9,7 +9,7 @@ module SimpleXlsx
     def initialize document, name, stream, &block
       @document = document
       @stream =  stream
-      @name = name
+      @name = name.to_xs
       @row_ndx = 1
       @stream.write <<-ends
   <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
