@@ -1,4 +1,5 @@
-require File.dirname(__FILE__) + '/../test_helper.rb'
+require 'test_helper.rb'
+# require File.dirname(__FILE__) + '/../test_helper.rb'
 
 module SimpleXlsx
 
@@ -6,7 +7,7 @@ class DocumentTest < Test::Unit::TestCase
 
   def open_stream_for_sheet sheets_size
     assert_equal sheets_size, @doc.sheets.size
-    yield self
+    # yield self
   end
 
   def write arg

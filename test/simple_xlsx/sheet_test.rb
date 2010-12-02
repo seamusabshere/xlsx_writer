@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../test_helper.rb'
+require 'test_helper'
 require "rexml/document"
 require 'time'
 
@@ -72,7 +72,7 @@ class SheetTest < Test::Unit::TestCase
     assert row
     assert_equal '1', row.attributes['r']
     assert_equal 2, row.elements.to_a.size
-    assert_equal ["r", "s", "t"], row.elements.to_a[0].attributes.keys
+    assert_equal ["r", "t", "s"], row.elements.to_a[0].attributes.keys
   end
 
 
