@@ -32,7 +32,7 @@ module SimpleXlsx
 <sheets>
 ends
       @doc.sheets.each_with_index do |sheet, ndx|
-        f.puts "<sheet name=\"#{sheet.name.to_xs}\" sheetId=\"#{ndx + 1}\" r:id=\"#{sheet.rid}\"/>"
+        f.puts "<sheet name=\"#{sheet.name}\" sheetId=\"#{ndx + 1}\" r:id=\"#{sheet.rid}\"/>"
       end
       f.puts "</sheets></workbook>"
     end
