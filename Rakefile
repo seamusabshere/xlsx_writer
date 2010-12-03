@@ -19,9 +19,9 @@ end
 
 spec = Gem::Specification.new do |s|
   s.name = "simple_xlsx_writer"
-  s.version = "0.5.4"
-  s.author = "Dee Zsombor"
-  s.email = "zsombor@primalgrasp.com"
+  s.version = "0.5.3.justinbeck1"
+  s.author = "Dee Zsombor & Justin Beck"
+  s.email = "justinbeck@mac.com"
   s.homepage = "http://simplxlsxwriter.rubyforge.org"
   s.rubyforge_project = "simple_xlsx_writer"
   s.platform = Gem::Platform::RUBY
