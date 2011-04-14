@@ -11,30 +11,6 @@ Rake::TestTask.new do |test|
   test.verbose    =  true
 end
 
-desc "generate tags for emacs"
-task :tags do
-  sh "ctags -Re lib/ "
-end
-
-
-spec = Gem::Specification.new do |s|
-  s.name = "simple_xlsx_writer"
-  s.version = "0.5.3.justinbeck1"
-  s.author = "Dee Zsombor & Justin Beck"
-  s.email = "justinbeck@mac.com"
-  s.homepage = "http://simplxlsxwriter.rubyforge.org"
-  s.rubyforge_project = "simple_xlsx_writer"
-  s.platform = Gem::Platform::RUBY
-  s.summary = "Just as the name says, simple writter for Office 2007+ Excel files"
-  s.files = [FileList["{bin,lib}/**/*"].to_a, "LICENSE", "Rakefile"].flatten
-  s.require_path = "lib"
-  s.test_files = [FileList["{test}/**/*test.rb"].to_a, "test/test_helper.rb"].flatten
-  s.has_rdoc = true
-  s.extra_rdoc_files = ["README"]
-  s.add_dependency("rubyzip", ">= 0.9.4")
-  s.add_dependency("fast_xs", ">= 0.7.3")
-end
-
-Rake::GemPackageTask.new(spec) do |pkg|
+Rake::GemPackageTask.new(SPEC) do |pkg|
   pkg.need_tar = true
 end
