@@ -86,6 +86,14 @@ ends
         end
       elsif data_hash[:type] == "Boolean"
         [:b, "<v>#{data_hash[:value].to_b ? '1' : '0'}</v>", 6]
+      elsif data_hash[:type] == "Money"
+        if data_hash[:value].blank?
+          [:n, "<v>#{data_hash[:value]}</v>", 2]
+        else
+          data_hash[:value].gsub!(/\$/, '')
+          data_hash[:value].gsub!(/\,/, '')
+          [:n, "<v>#{data_hash[:value]}</v>", 2]
+        end
       else
         [:inlineStr, "<is><t>#{data_hash[:value]}</t></is>", 4]
       end
