@@ -29,7 +29,10 @@
                      "Economist / Statistician"])
     end
   end
+  
+  file_with_data = serializer.zipfile
 
+  serializer.cleanup
 
 ** License **
 
