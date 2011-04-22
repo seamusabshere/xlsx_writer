@@ -10,6 +10,7 @@ module SimpleXlsx
     def add_sheet name, column_information, &block
       stream = @io.open_stream_for_sheet(@sheets.size)
       @sheets << Sheet.new(self, escape_for_excel(name), column_information, stream, &block)
+      stream.close
     end
 
     def has_shared_strings?

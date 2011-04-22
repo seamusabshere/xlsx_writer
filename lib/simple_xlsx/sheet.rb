@@ -15,38 +15,40 @@ module SimpleXlsx
       @stream = stream
       @name = name.to_xs
       @row_ndx = 1
-      @stream.write <<-ends
+      @stream.write <<-ends.lf_to_crlf
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+<dimension ref="A1:F10"/>
 <sheetViews>
   <sheetView tabSelected="1" workbookViewId="0">
     <pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/>
-    <select pane="bottomLeft" activeCell="A2" sqref="A2"/>
+    <selection pane="bottomLeft"/>
   </sheetView>
 </sheetViews>
+<sheetFormatPr defaultRowHeight="15"/>
 ends
       if column_information.blank?
-        @stream.write("<sheetData>")
+        @stream.write("<sheetData>".lf_to_crlf)
       else
         self.write_column_header(column_information)
       end
       if block_given?
         yield self
       end
-      @stream.write "</sheetData></worksheet>"
+      @stream.write "</sheetData></worksheet>".lf_to_crlf
     end
 
     # width = ( (pixel_width + 5)/(8*256))*256
     # the + 5 is the padding pixels put in by MS, 8 is the pixel width of the font (best guess)
     def write_column_header(column_info)
       num_cols = column_info.size
-      @stream.write("<cols>")
+      @stream.write("<cols>".lf_to_crlf)
       column_info.each_with_index do |c, i|
         width = ((c[:width] + 5)/2048.to_f)*256
-        @stream.write("<col min=\"#{i+1}\" max=\"#{i+1}\" width=\"#{width.to_s}\" bestFit=\"1\" customWidth=\"1\"/>")
+        @stream.write("<col min=\"#{i+1}\" max=\"#{i+1}\" width=\"#{width.to_s}\" bestFit=\"1\" customWidth=\"1\"/>".lf_to_crlf)
       end
-      @stream.write("</cols>")
-      @stream.write("<sheetData>")
+      @stream.write("</cols>".lf_to_crlf)
+      @stream.write("<sheetData>".lf_to_crlf)
       self.add_row column_info, true
     end
     
@@ -54,8 +56,8 @@ ends
     # [{:type => "DateTime", :width => 100, :value => "Date"},{:type => "String", :width => 800, :value => "Long String"}]
     def add_row arry, header = false
       if header
-        row = ["<row r=\"#{@row_ndx}\" s=\"5\" customFormat=\"1\">"]
-        cstyle = 5
+        row = ["<row r=\"#{@row_ndx}\" s=\"4\" customFormat=\"1\">"]
+        cstyle = 4
         kind = :inlineStr
       else
         row = ["<row r=\"#{@row_ndx}\">"]
@@ -66,26 +68,36 @@ ends
         else
           kind, ccontent, cstyle = Sheet.format_field_and_type_and_style data_hash
         end
-        row << "<c r=\"#{Sheet.column_index(col_ndx)}#{@row_ndx}\" t=\"#{kind.to_s}\" s=\"#{cstyle}\">#{ccontent}</c>"
+        t_kind = kind.blank? ? "" : "t=\"#{kind.to_s}\""
+        t_style = cstyle.blank? ? "" : "s=\"#{cstyle}\""
+        if ccontent.blank?
+          row << "<c r=\"#{Sheet.column_index(col_ndx)}#{@row_ndx}\" #{t_kind} #{t_style}/>"
+        else
+          row << "<c r=\"#{Sheet.column_index(col_ndx)}#{@row_ndx}\" #{t_kind} #{t_style}>#{ccontent}</c>"
+        end
       end
       row << "</row>"
       @row_ndx += 1
-      @stream.write(row.join())
+      @stream.write(row.join("\r\n"))
     end
 
     def self.format_field_and_type_and_style data_hash
       if data_hash[:type] == "String"
-        [:inlineStr, "<is><t>#{data_hash[:value]}</t></is>", 4]
+        if data_hash[:value].blank?
+          [:inlineStr, "", 3]
+        else
+          [:inlineStr, "<is><t>#{data_hash[:value]}</t></is>", 3]
+        end
       elsif data_hash[:type] == "Number"
-        [:n, "<v>#{data_hash[:value]}</v>", 3]
+        [:n, "<v>#{data_hash[:value]}</v>", 6]
       elsif data_hash[:type] == "DateTime"
         if data_hash[:value].blank?
-          [:inlineStr, "<v>#{data_hash[:value]}</v>", 1]
+          [:inlineStr, "", 3]
         else
           [:n, "<v>#{days_since_jan_1_1900(Date.parse(data_hash[:value]))}</v>", 1]
         end
       elsif data_hash[:type] == "Boolean"
-        [:b, "<v>#{data_hash[:value].to_b ? '1' : '0'}</v>", 6]
+        [:b, "<v>#{data_hash[:value].to_b ? '1' : '0'}</v>", 5]
       elsif data_hash[:type] == "Money"
         if data_hash[:value].blank?
           [:n, "<v>#{data_hash[:value]}</v>", 2]
@@ -95,7 +107,7 @@ ends
           [:n, "<v>#{data_hash[:value]}</v>", 2]
         end
       else
-        [:inlineStr, "<is><t>#{data_hash[:value]}</t></is>", 4]
+        [:inlineStr, "<is><t>#{data_hash[:value]}</t></is>", 3]
       end
     end
 
