@@ -64,7 +64,7 @@ ends
       end
       arry.each_with_index do |data_hash, col_ndx|
         if header
-          ccontent = "<is><t>#{data_hash[:value]}</t></is>"
+          ccontent = "<is><t>#{Sheet.clean_string(data_hash[:value])}</t></is>"
         else
           kind, ccontent, cstyle = Sheet.format_field_and_type_and_style data_hash
         end
@@ -86,10 +86,10 @@ ends
         if data_hash[:value].blank?
           [:inlineStr, "", 3]
         else
-          [:inlineStr, "<is><t>#{data_hash[:value]}</t></is>", 3]
+          [:inlineStr, "<is><t>#{Sheet.clean_string(data_hash[:value])}</t></is>", 3]
         end
       elsif data_hash[:type] == "Number"
-        [:n, "<v>#{data_hash[:value]}</v>", 6]
+        [:n, "<v>#{Sheet.clean_number(data_hash[:value])}</v>", 6]
       elsif data_hash[:type] == "DateTime"
         if data_hash[:value].blank?
           [:inlineStr, "", 3]
@@ -102,12 +102,10 @@ ends
         if data_hash[:value].blank?
           [:n, "<v>#{data_hash[:value]}</v>", 2]
         else
-          data_hash[:value].gsub!(/\$/, '')
-          data_hash[:value].gsub!(/\,/, '')
-          [:n, "<v>#{data_hash[:value]}</v>", 2]
+          [:n, "<v>#{Sheet.clean_number(data_hash[:value])}</v>", 2]
         end
       else
-        [:inlineStr, "<is><t>#{data_hash[:value]}</t></is>", 3]
+        [:inlineStr, "<is><t>#{Sheet.clean_string(data_hash[:value])}</t></is>", 3]
       end
     end
 
@@ -134,6 +132,16 @@ ends
       end
       result << abc[result.empty? ? n : n - 1]
       result.reverse.join
+    end
+    
+    # use this to sub out values that excel doesn't like, for example & changing to &amp;
+    def self.clean_string(value)
+      value.gsub(/\&/, '&amp;')
+    end
+    
+    def self.clean_number(value)
+      value.gsub!(/\$/, '')
+      value.gsub(/\,/, '')
     end
 
   end
