@@ -89,20 +89,36 @@ ends
           [:inlineStr, "<is><t>#{Sheet.clean_string(data_hash[:value])}</t></is>", 3]
         end
       elsif data_hash[:type] == "Number"
-        [:n, "<v>#{Sheet.clean_number(data_hash[:value])}</v>", 6]
+        if Sheet.is_multilined?(data_hash[:value])
+          [:inlineStr, "<is><t>#{Sheet.clean_number(data_hash[:value])}</t></is>", 6]
+        else
+          [:n, "<v>#{Sheet.clean_number(data_hash[:value])}</v>", 6]
+        end
       elsif data_hash[:type] == "DateTime"
         if data_hash[:value].blank?
           [:inlineStr, "", 3]
         else
-          [:n, "<v>#{days_since_jan_1_1900(Date.parse(data_hash[:value]))}</v>", 1]
+          if Sheet.is_multilined?(data_hash[:value])
+            [:inlineStr, "<is><t xml:space=\"preserve\">#{data_hash[:value]}</t></is>", 1]
+          else
+            [:n, "<v>#{days_since_jan_1_1900(Date.parse(data_hash[:value]))}</v>", 1]
+          end
         end
       elsif data_hash[:type] == "Boolean"
-        [:b, "<v>#{data_hash[:value].to_b ? '1' : '0'}</v>", 5]
+        if Sheet.is_multilined?(data_hash[:value])
+          [:inlineStr, "<is><t>#{data_hash[:value].upcase}</t></is>", 5]
+        else
+          [:b, "<v>#{data_hash[:value].to_b ? '1' : '0'}</v>", 5]
+        end
       elsif data_hash[:type] == "Money"
         if data_hash[:value].blank?
           [:n, "<v>#{data_hash[:value]}</v>", 2]
         else
-          [:n, "<v>#{Sheet.clean_number(data_hash[:value])}</v>", 2]
+          if Sheet.is_multilined?(data_hash[:value])
+            [:inlineStr, "<is><t>#{data_hash[:value]}</t></is>", 2]
+          else
+            [:n, "<v>#{Sheet.clean_number(data_hash[:value])}</v>", 2]
+          end
         end
       else
         [:inlineStr, "<is><t>#{Sheet.clean_string(data_hash[:value])}</t></is>", 3]
@@ -142,6 +158,10 @@ ends
     def self.clean_number(value)
       value.gsub!(/\$/, '')
       value.gsub(/\,/, '')
+    end
+    
+    def self.is_multilined?(value)
+      value=~/\r|\n/ ? true : false
     end
 
   end
