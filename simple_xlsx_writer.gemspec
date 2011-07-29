@@ -3,7 +3,7 @@ $LOAD_PATH.unshift 'lib'
 
 Gem::Specification.new do |s|
   s.name        = "mumboe-simple_xlsx_writer"
-  s.version     = '0.5.9'
+  s.version     = '0.5.10'
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Dee Zsombor", "Justin Beck", "Michael Alletto"]
   s.email       = ["dbortz@gmail.com", "mikea@mumboe.com"]
