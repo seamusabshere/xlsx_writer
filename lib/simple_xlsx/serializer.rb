@@ -49,6 +49,9 @@ module SimpleXlsx
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
   <workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
     <workbookPr date1904="0" />
+    <bookViews>
+      <workbookView xWindow="0" yWindow="60" windowWidth="15180" windowHeight="8070"/>
+    </bookViews>
     <sheets>
 ends
       @doc.sheets.each_with_index do |sheet, ndx|
