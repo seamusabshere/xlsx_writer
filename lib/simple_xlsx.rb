@@ -9,3 +9,10 @@ require 'simple_xlsx/document'
 require 'simple_xlsx/sheet'
 
 
+# add lf -> crlf conversion to string
+class String
+  def lf_to_crlf
+    gsub(/\012/, "\015\012")
+  end
+end
+

@@ -64,7 +64,7 @@ ends
       end
       arry.each_with_index do |data_hash, col_ndx|
         if header
-          ccontent = "<is><t>#{Sheet.clean_string(data_hash[:value])}</t></is>"
+          ccontent = "<is><t>#{data_hash[:value].to_xs}</t></is>"
         else
           kind, ccontent, cstyle = Sheet.format_field_and_type_and_style data_hash
         end
@@ -86,13 +86,13 @@ ends
         if data_hash[:value].blank?
           [:inlineStr, "", 3]
         else
-          [:inlineStr, "<is><t>#{Sheet.clean_string(data_hash[:value])}</t></is>", 3]
+          [:inlineStr, "<is><t>#{data_hash[:value].to_xs}</t></is>", 3]
         end
       elsif data_hash[:type] == "Number"
         if Sheet.is_multilined?(data_hash[:value])
-          [:inlineStr, "<is><t>#{Sheet.clean_number(data_hash[:value])}</t></is>", 6]
+          [:inlineStr, "<is><t>#{data_hash[:value].to_xs}</t></is>", 6]
         else
-          [:n, "<v>#{Sheet.clean_number(data_hash[:value])}</v>", 6]
+          [:n, "<v>#{data_hash[:value].to_xs}</v>", 6]
         end
       elsif data_hash[:type] == "DateTime"
         if data_hash[:value].blank?
@@ -115,13 +115,13 @@ ends
           [:n, "<v>#{data_hash[:value]}</v>", 2]
         else
           if Sheet.is_multilined?(data_hash[:value])
-            [:inlineStr, "<is><t>#{data_hash[:value]}</t></is>", 2]
+            [:inlineStr, "<is><t>#{data_hash[:value].to_xs}</t></is>", 2]
           else
-            [:n, "<v>#{Sheet.clean_number(data_hash[:value])}</v>", 2]
+            [:n, "<v>#{data_hash[:value].to_xs}</v>", 2]
           end
         end
       else
-        [:inlineStr, "<is><t>#{Sheet.clean_string(data_hash[:value])}</t></is>", 3]
+        [:inlineStr, "<is><t>#{data_hash[:value].to_xs}</t></is>", 3]
       end
     end
 
