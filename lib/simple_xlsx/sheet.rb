@@ -138,6 +138,7 @@ ends
       (date - @@jan_1_1904).to_i + 1462 # http://support.microsoft.com/kb/180162
     end
 
+    # Nobody's using this
     def self.fractional_days_since_jan_1_1900 value
       @@jan_1_1904_midnight ||= ::Time.utc(1904, 1, 1)
       ((value - @@jan_1_1904_midnight) / 86400.0) + #24*60*60

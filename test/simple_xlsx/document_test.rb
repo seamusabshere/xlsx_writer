@@ -1,4 +1,4 @@
-require 'test_helper.rb'
+require File.dirname(__FILE__) + '/../test_helper'
 
 module SimpleXlsx
   class DocumentTest < Test::Unit::TestCase
