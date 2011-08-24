@@ -1,7 +1,16 @@
 GEM
   remote: http://rubygems.org/
   specs:
+    columnize (0.3.4)
     fast_xs (0.7.3)
+    linecache (0.46)
+      rbx-require-relative (> 0.0.4)
+    rbx-require-relative (0.0.5)
+    ruby-debug (0.10.4)
+      columnize (>= 0.1)
+      ruby-debug-base (~> 0.10.4.0)
+    ruby-debug-base (0.10.4)
+      linecache (>= 0.3)
     zip (2.0.2)
 
 PLATFORMS
@@ -9,4 +18,5 @@ PLATFORMS
 
 DEPENDENCIES
   fast_xs
+  ruby-debug
   zip

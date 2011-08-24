@@ -13,7 +13,7 @@ module SimpleXlsx
     def initialize document, name, column_information, stream, &block
       @document = document
       @stream = stream
-      @name = name.to_xs
+      @name = Sheet::xscape(name)
       @row_ndx = 1
       @stream.write <<-ends.lf_to_crlf
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -27,7 +27,7 @@ module SimpleXlsx
 </sheetViews>
 <sheetFormatPr defaultRowHeight="15"/>
 ends
-      if column_information.blank?
+      if Sheet::blank?(column_information)
         @stream.write("<sheetData>".lf_to_crlf)
       else
         self.write_column_header(column_information)
@@ -64,13 +64,13 @@ ends
       end
       arry.each_with_index do |data_hash, col_ndx|
         if header
-          ccontent = "<is><t>#{data_hash[:value].to_xs}</t></is>"
+          ccontent = "<is><t>#{xscape(data_hash[:value])}</t></is>"
         else
           kind, ccontent, cstyle = Sheet.format_field_and_type_and_style data_hash
         end
-        t_kind = kind.blank? ? "" : "t=\"#{kind.to_s}\""
-        t_style = cstyle.blank? ? "" : "s=\"#{cstyle}\""
-        if ccontent.blank?
+        t_kind = blank?(kind) ? "" : "t=\"#{kind.to_s}\""
+        t_style = blank?(cstyle) ? "" : "s=\"#{cstyle}\""
+        if blank?(ccontent)
           row << "<c r=\"#{Sheet.column_index(col_ndx)}#{@row_ndx}\" #{t_kind} #{t_style}/>"
         else
           row << "<c r=\"#{Sheet.column_index(col_ndx)}#{@row_ndx}\" #{t_kind} #{t_style}>#{ccontent}</c>"
@@ -81,21 +81,29 @@ ends
       @stream.write(row.join("\r\n"))
     end
 
+    def xscape(value)
+      Sheet::xscape(value)
+    end
+
+    def blank?(object)
+      Sheet::blank?(object)
+    end
+
     def self.format_field_and_type_and_style data_hash
       if data_hash[:type] == "String"
-        if data_hash[:value].blank?
+        if blank?(data_hash[:value])
           [:inlineStr, "", 3]
         else
-          [:inlineStr, "<is><t>#{data_hash[:value].to_xs}</t></is>", 3]
+          [:inlineStr, "<is><t>#{xscape(data_hash[:value])}</t></is>", 3]
         end
       elsif data_hash[:type] == "Number"
         if Sheet.is_multilined?(data_hash[:value])
-          [:inlineStr, "<is><t>#{data_hash[:value].to_xs}</t></is>", 6]
+          [:inlineStr, "<is><t>#{xscape(data_hash[:value])}</t></is>", 6]
         else
-          [:n, "<v>#{data_hash[:value].to_xs}</v>", 6]
+          [:n, "<v>#{xscape(data_hash[:value])}</v>", 6]
         end
       elsif data_hash[:type] == "DateTime"
-        if data_hash[:value].blank?
+        if blank?(data_hash[:value])
           [:inlineStr, "", 3]
         else
           if Sheet.is_multilined?(data_hash[:value])
@@ -111,17 +119,17 @@ ends
           [:b, "<v>#{data_hash[:value].to_b ? '1' : '0'}</v>", 5]
         end
       elsif data_hash[:type] == "Money"
-        if data_hash[:value].blank?
+        if blank?(data_hash[:value])
           [:n, "<v>#{data_hash[:value]}</v>", 2]
         else
           if Sheet.is_multilined?(data_hash[:value])
-            [:inlineStr, "<is><t>#{data_hash[:value].to_xs}</t></is>", 2]
+            [:inlineStr, "<is><t>#{xscape(data_hash[:value])}</t></is>", 2]
           else
-            [:n, "<v>#{data_hash[:value].to_xs}</v>", 2]
+            [:n, "<v>#{xscape(data_hash[:value])}</v>", 2]
           end
         end
       else
-        [:inlineStr, "<is><t>#{data_hash[:value].to_xs}</t></is>", 3]
+        [:inlineStr, "<is><t>#{xscape(data_hash[:value])}</t></is>", 3]
       end
     end
 
@@ -164,5 +172,13 @@ ends
       value=~/\r|\n/ ? true : false
     end
 
+    # add a Rails-y blank? for convenience
+    def self.blank?(object)
+      object.respond_to?(:empty?) ? object.empty? : !object
+    end
+
+    def self.xscape(value)
+      value.respond_to?(:to_xs) ? value.to_xs : value
+    end
   end
 end

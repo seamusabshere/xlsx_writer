@@ -59,9 +59,18 @@ class SheetTest < Test::Unit::TestCase
   end
 
   def test_add_row
+    headers = [{:type=>"Number", :width=>155, :header=>"Agreement Type"}, 
+      {:type=>"String", :width=>100, :header=>"Mumboe Id"}, 
+      {:type=>"String", :width=>169, :header=>"Agreement Title"}, 
+      {:type=>"String", :width=>219, :header=>"Document Title"}, 
+      {:type=>"String", :width=>100, :header=>"Party"}, 
+      {:type=>"Date", :width=>154, :header=>"Agreement Date Created"}, 
+      {:type=>"Number", :width=>228, :header=>"Security Deposit"}, 
+      {:type=>"String", :width=>100, :header=>"my multi-line field"}]
+
     str = ""
     io = StringIO.new(str)
-    Sheet.new(nil, 'name', io) do |sheet|
+    Sheet.new(nil, 'name', headers, io) do |sheet|
       sheet.add_row ['this is ', 'a new row']
     end
     doc = REXML::Document.new str
