@@ -116,7 +116,7 @@ ends
         if Sheet.is_multilined?(data_hash[:value])
           [:inlineStr, "<is><t>#{data_hash[:value].upcase}</t></is>", 5]
         else
-          [:b, "<v>#{data_hash[:value].to_b ? '1' : '0'}</v>", 5]
+          [:b, "<v>#{data_hash[:value] ? '1' : '0'}</v>", 5]
         end
       elsif data_hash[:type] == "Money"
         if blank?(data_hash[:value])
