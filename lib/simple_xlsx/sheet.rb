@@ -35,7 +35,7 @@ ends
       if block_given?
         yield self
       end
-      @stream.write "</sheetData></worksheet>".lf_to_crlf
+      @stream.write %{</sheetData>#{autofilter_xml}</worksheet>}.lf_to_crlf
     end
 
     # width = ( (pixel_width + 5)/(8*256))*256
@@ -50,6 +50,21 @@ ends
       @stream.write("</cols>".lf_to_crlf)
       @stream.write("<sheetData>".lf_to_crlf)
       self.add_row column_info, true
+    end
+    
+    # specify range like "A1:C1"
+    def add_autofilter(range)
+      autofilters << range
+    end
+    
+    def autofilter_xml
+      autofilters.map do |range|
+        %{<autoFilter ref="#{range}"/>}
+      end.join
+    end
+
+    def autofilters
+      @autofilters ||= []
     end
     
     # for more control over styling, pass in array of hash values, for example

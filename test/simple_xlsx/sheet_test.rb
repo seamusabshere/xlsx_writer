@@ -80,5 +80,15 @@ module SimpleXlsx
       assert_equal headers.size, row.elements.to_a.size
       assert_equal [], row.elements.to_a[0].attributes.keys - ["r", "t", "s"]
     end
+    
+    def test_add_autofilter
+      str = ""
+      io = StringIO.new(str)
+      Sheet.new(nil, 'mysheet', io) do |sheet|
+        sheet.add_autofilter('A1:B1')
+        sheet.add_row [1, 2]
+      end
+      assert str.include?('</sheetData><autoFilter ref="A1:B1"/></worksheet>')
+    end
   end
 end
