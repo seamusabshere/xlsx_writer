@@ -10,7 +10,7 @@ module SimpleXlsx
     #send it something like
     # [{:type => "String", :value => "First Column", :width => 100},{:type => "Number", :value => "Second Column", :width => 200}]
     # it will use this information to create the header row and setup the widths for the columns
-    def initialize document, name, column_information, stream, &block
+    def initialize document, name, stream, column_information = nil, &block
       @document = document
       @stream = stream
       @name = Sheet::xscape(name)

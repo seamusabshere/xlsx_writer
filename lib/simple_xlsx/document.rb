@@ -7,9 +7,9 @@ module SimpleXlsx
 
     attr_reader :sheets
 
-    def add_sheet name, column_information, &block
+    def add_sheet name, column_information = nil, &block
       stream = @io.open_stream_for_sheet(@sheets.size)
-      @sheets << Sheet.new(self, escape_for_excel(name), column_information, stream, &block)
+      @sheets << Sheet.new(self, escape_for_excel(name), stream, column_information, &block)
       stream.close
     end
 

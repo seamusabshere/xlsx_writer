@@ -67,7 +67,7 @@ module SimpleXlsx
 
       str = ""
       io = StringIO.new(str)
-      Sheet.new(nil, 'name', headers, io) do |sheet|
+      Sheet.new(nil, 'name', io, headers) do |sheet|
         sheet.add_row ['this is ', 'a new row']
       end
       doc = REXML::Document.new str
