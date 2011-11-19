@@ -90,7 +90,9 @@ ends
     end
 
     def self.format_field_and_type_and_style data_hash
-      if data_hash[:type] == "String"
+      if not data_hash.is_a?(Hash)
+        [:inlineStr, "<is><t>#{xscape(data_hash)}</t></is>", 3]
+      elsif data_hash[:type] == "String"
         if blank?(data_hash[:value])
           [:inlineStr, "", 3]
         else
