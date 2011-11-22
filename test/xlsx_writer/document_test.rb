@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
-module SimpleXlsx
+module Xlsx
   class DocumentTest < Test::Unit::TestCase
 
     # mocking IO methods so test can be used as Document.new parameter

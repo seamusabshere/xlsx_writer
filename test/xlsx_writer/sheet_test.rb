@@ -3,7 +3,7 @@ require "rexml/document"
 require 'date'
 require 'time'
 
-module SimpleXlsx
+module Xlsx
   class SheetTest < Test::Unit::TestCase
 
     def test_column_index
