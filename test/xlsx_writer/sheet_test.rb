@@ -39,12 +39,12 @@ module Xlsx
     end
 
     def test_format_field_for_date
-      v = Sheet.format_field_and_type_and_style(:type => 'DateTime', :value => '2010-Jul-24')
+      v = Sheet.format_field_and_type_and_style(:type => 'Date', :value => '2010-Jul-24')
       assert_equal [:n, "<v>#{38921+1462}</v>", 1], v
     end
 
     def test_format_field_for_datetime
-      v = Sheet.format_field_and_type_and_style(:type => 'DateTime', :value => '2010-Jul-24 12:00 UTC')
+      v = Sheet.format_field_and_type_and_style(:type => 'Date', :value => '2010-Jul-24 12:00 UTC')
       assert_equal [:n, "<v>#{38921+1462}</v>", 1], v
     end
 

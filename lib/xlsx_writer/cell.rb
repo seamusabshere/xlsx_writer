@@ -3,19 +3,12 @@ require 'fast_xs'
 module XlsxWriter
   class Cell
     class << self
-      def excel_type(value, type_hint = nil)
-        if value.is_a?(::Date)
-          return :n
-        end
-        
-        # unless type_hint
-        #   return :inlineStr
-        # end
-        
-        case type_hint.to_sym
+      # TODO make a class for this
+      def excel_type(calculated_type)
+        case calculated_type
         when :String
           :inlineStr
-        when :Number, :DateTime, :Money
+        when :Number, :Date, :Currency
           :n
         when :Boolean
           :b
@@ -24,29 +17,22 @@ module XlsxWriter
         end
       end
       
-      def excel_style_number(value, type_hint = nil)
-        if value.is_a?(::Date)
-          return 1
-        end
-        
-        # unless type_hint
-        #   return 3
-        # end
-
-        case type_hint.to_sym
+      # TODO make a class for this
+      def excel_style_number(calculated_type)
+        case calculated_type
         when :String
-          3
+          0
         when :Number
-          6
-        when :DateTime
+          0
+        when :Currency
           1
-        when :Boolean
-          5
-        when :Money
+        when :Date
           2
+        when :Boolean
+          0 # todo
         else
           raise ::ArgumentError, "Unknown cell type #{k}"
-        end if type_hint
+        end
       end
       
       def excel_column_letter(i)
@@ -65,21 +51,21 @@ module XlsxWriter
       
       def excel_number(value)
         str = value.to_s.dup
-        str.gsub! '$', '' # ?
-        str.gsub! ',', '' # ?
+        unless str =~ /\A[0-9\.]*\z/
+          raise ::ArgumentError, %{Bad value "#{value}" Only numbers and dots (.) allowed in number fields}
+        end
         str.fast_xs
       end
       
-      alias :excel_money :excel_number
+      alias :excel_currency :excel_number
       
-      # http://support.microsoft.com/kb/180162
+      # doesn't necessarily work for times yet
       JAN_1_1900 = ::Time.parse('1900-01-01')
-      def excel_date_time(value)
-        case value
-        when ::String
+      def excel_date(value)
+        if value.is_a?(::String)
           ((::Time.parse(str) - JAN_1_1900) / 86_400).round
-        when ::Date
-          (value - JAN_1_1900.to_date).to_i
+        elsif value.respond_to?(:to_date)
+          (value.to_date - JAN_1_1900.to_date).to_i
         end
       end
       
@@ -96,7 +82,6 @@ module XlsxWriter
     def initialize(row, data)
       @row = row
       @data = data.is_a?(::Hash) ? data.symbolize_keys : data
-      validate
     end
     
     def unstyled?
@@ -109,7 +94,7 @@ module XlsxWriter
     
     def to_xml
       if value.blank?
-        %{<c r="#{excel_column_letter}#{row.ndx}" s="#{excel_style_number}" t="#{excel_type}" />}
+        %{<c r="#{excel_column_letter}#{row.ndx}" s="0" t="inlineStr" />}
       elsif excel_type == :inlineStr
         %{<c r="#{excel_column_letter}#{row.ndx}" s="#{excel_style_number}" t="#{excel_type}"><is><t>#{excel_value}</t></is></c>}
       else
@@ -121,27 +106,23 @@ module XlsxWriter
     def excel_column_letter
       Cell.excel_column_letter row.cells.index(self)
     end
-        
-    def validate
-      if styled? and type_hint.blank?
-        raise ::ArgumentError, "When passing a Hash to Sheet#add_row, must specify cell type"
-      end
-    end
     
     # detect dates here, even if we're not styled
     def excel_type
-      Cell.excel_type value, type_hint
+      Cell.excel_type calculated_type
     end
     
     def excel_style_number
-      Cell.excel_style_number value, type_hint
+      Cell.excel_style_number calculated_type
     end
 
-    def type_hint
+    def calculated_type
       if styled?
         data[:type]
       elsif value.is_a?(::Date)
-        :DateTime
+        :Date
+      elsif value.is_a?(::Numeric) or value.to_s =~ /\A[0-9\.,]+\z/
+        :Number
       else
         :String
       end
@@ -152,7 +133,7 @@ module XlsxWriter
     end
     
     def excel_value
-      Cell.send "excel_#{type_hint.to_s.underscore}", value
+      Cell.send "excel_#{calculated_type.to_s.underscore}", value
     end
   end
 end

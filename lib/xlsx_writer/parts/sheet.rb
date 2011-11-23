@@ -46,8 +46,6 @@ module XlsxWriter
       @rows ||= []
     end
     
-    # for more control over styling, pass in array of hash values, for example
-    # [{:type => "DateTime", :width => 100, :value => "Date"},{:type => "String", :width => 800, :value => "Long String"}]
     def add_row(data)
       raise ::RuntimeError, "Can't add row, already generated!" if generated?
       row = Row.new self, data
