@@ -86,7 +86,7 @@ module XlsxWriter
     
     # width = Truncate([{Number of Characters} * {Maximum Digit Width} + {5 pixel padding}]/{Maximum Digit Width}*256)/256
     # Using the Calibri font as an example, the maximum digit width of 11 point font size is 7 pixels (at 96 dpi). In fact, each digit is the same width for this font. Therefore if the cell width is 8 characters wide, the value of this attribute shall be Truncate([8*7+5]/7*256)/256 = 8.7109375.
-    MAX_DIGIT_WIDTH = 7.5
+    MAX_DIGIT_WIDTH = 8.0
     def pixel_width
       @pixel_width ||= ((character_width.to_f*MAX_DIGIT_WIDTH+5)/MAX_DIGIT_WIDTH*256)/256
     end
