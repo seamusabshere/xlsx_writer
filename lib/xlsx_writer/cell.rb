@@ -143,7 +143,7 @@ module XlsxWriter
         data[:type]
       elsif value.is_a?(::Date)
         :Date
-      elsif value.is_a?(::Numeric) or value.to_s =~ /\A[0-9\.,]+\z/
+      elsif value.is_a?(::Numeric)
         :Number
       else
         :String
