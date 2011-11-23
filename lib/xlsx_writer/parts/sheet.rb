@@ -52,5 +52,30 @@ module XlsxWriter
       rows << row
       row
     end
+    
+    # override Xml method to save memory
+    def generate
+      @path = staging_path
+      ::File.open(@path, 'w') do |out|
+        to_file out
+      end
+      Utils.unix2dos @path
+      @generated = true
+    end
+    
+    private
+    
+    # not using ERB to save memory
+    def to_file(f)
+      f.puts <<-EOS
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+<sheetData>
+EOS
+      rows.each { |row| f.puts row.to_xml }
+      f.puts %{</sheetData>}
+      autofilters.each { |autofilter| f.puts %{<autoFilter ref="#{autofilter}" />} }
+      f.puts %{</worksheet>}
+    end
   end
 end
