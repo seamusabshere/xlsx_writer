@@ -56,7 +56,7 @@ module XlsxWriter
     # override Xml method to save memory
     def generate
       @path = staging_path
-      ::File.open(@path, 'w') do |out|
+      ::File.open(@path, 'wb') do |out|
         to_file out
       end
       Utils.unix2dos @path
@@ -70,12 +70,25 @@ module XlsxWriter
       f.puts <<-EOS
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
-<sheetData>
+<cols>
 EOS
+      (0..max_length-1).each do |x|
+        f.puts %{<col min="#{x+1}" max="#{x+1}" width="#{max_cell_width(x)}" customWidth="1" />}
+      end
+      f.puts %{</cols>}
+      f.puts %{<sheetData>}
       rows.each { |row| f.puts row.to_xml }
       f.puts %{</sheetData>}
       autofilters.each { |autofilter| f.puts %{<autoFilter ref="#{autofilter}" />} }
       f.puts %{</worksheet>}
+    end
+    
+    def max_length
+      rows.max_by { |row| row.length }.length
+    end
+    
+    def max_cell_width(x)
+      rows.max_by { |row| row.cell_width(x) }.cell_width(x)
     end
   end
 end

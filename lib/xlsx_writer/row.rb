@@ -14,6 +14,18 @@ module XlsxWriter
       sheet.rows.index(self) + 1
     end
     
+    def length
+      cells.length
+    end
+    
+    def cell_width(x)
+      if cell = cells[x]
+        cell.pixel_width
+      else
+        0
+      end
+    end
+    
     def to_xml
       ary = []
       ary << %{<row r="#{ndx}">}
@@ -23,5 +35,8 @@ module XlsxWriter
       ary << %{</row>}
       ary.join
     end
+    
+    extend ::ActiveSupport::Memoizable
+    memoize :cell_width
   end
 end

@@ -34,7 +34,7 @@ module XlsxWriter
     
     def generate
       @path = staging_path
-      ::File.open(@path, 'w') do |out|
+      ::File.open(@path, 'wb') do |out|
         out.write render
       end
       Utils.unix2dos @path

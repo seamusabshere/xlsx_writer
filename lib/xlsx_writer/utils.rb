@@ -23,7 +23,7 @@ module XlsxWriter
     # use awk to convert CR?LF to CRLF
     def self.unix2dos(path)
       out_path = tmp_path
-      ::File.open(out_path, 'w') do |out|
+      ::File.open(out_path, 'wb') do |out|
         pid = ::POSIX::Spawn.spawn 'awk', '{ sub(/\r?$/,"\r"); print }', path, :out => out
         ::Process.waitpid pid
       end
