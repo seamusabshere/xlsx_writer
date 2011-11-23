@@ -51,7 +51,7 @@ module XlsxWriter
       
       def excel_number(value)
         str = value.to_s.dup
-        unless str =~ /\A[0-9\.]*\z/
+        unless str =~ /\A[0-9\.\-]*\z/
           raise ::ArgumentError, %{Bad value "#{value}" Only numbers and dots (.) allowed in number fields}
         end
         str.fast_xs
@@ -97,8 +97,16 @@ module XlsxWriter
       @character_width ||= case calculated_type
       when :String
         value.to_s.length
-      when :Number, :Currency
-        value.to_s.length + (value / 1000) + 2
+      when :Number
+        # -1000000.5
+        len = value.round(2).to_s.length
+        len += 1 if value < 0
+        len
+      when :Currency
+        # (1,000,000.50)
+        len = value.round(2).to_s.length + ::Math.log(value.abs, 1_000).floor
+        len += 2 if value < 0
+        len
       when :Date
         DATE_LENGTH
       when :Boolean
