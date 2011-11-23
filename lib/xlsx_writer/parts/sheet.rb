@@ -73,7 +73,7 @@ module XlsxWriter
 <cols>
 EOS
       (0..max_length-1).each do |x|
-        f.puts %{<col min="#{x+1}" max="#{x+1}" width="#{max_cell_width(x)}" customWidth="1" />}
+        f.puts %{<col min="#{x+1}" max="#{x+1}" width="#{max_cell_width(x)}" bestFit="1" customWidth="1" />}
       end
       f.puts %{</cols>}
       f.puts %{<sheetData>}
