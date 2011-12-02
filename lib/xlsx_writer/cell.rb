@@ -23,7 +23,7 @@ module XlsxWriter
         when :String
           0
         when :Number
-          0
+          3
         when :Currency
           1
         when :Date
