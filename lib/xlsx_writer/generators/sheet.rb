@@ -11,6 +11,8 @@ module XlsxWriter
         str.fast_xs
       end
     end
+
+    AUTO = false
     
     attr_reader :name
 
@@ -31,17 +33,21 @@ module XlsxWriter
     def relative_path
       "xl/worksheets/sheet#{ndx}.xml"
     end
+    
+    def absolute_path
+      "/#{relative_path}"
+    end
+
+    def autofilters
+      @autofilters ||= []
+    end
 
     # specify range like "A1:C1"
     def add_autofilter(range)
       raise ::RuntimeError, "Can't add autofilter, already generated!" if generated?
-      autofilters << range
+      autofilters << Autofilter.new(range)
     end
-    
-    def autofilters
-      @autofilters ||= []
-    end
-    
+        
     def rows
       @rows ||= []
     end
@@ -52,7 +58,7 @@ module XlsxWriter
       rows << row
       row
     end
-    
+        
     # override Xml method to save memory
     def generate
       @path = staging_path
@@ -60,8 +66,11 @@ module XlsxWriter
         to_file out
       end
       Utils.unix2dos @path
+      SheetRels.new(document, self).generate
       @generated = true
     end
+    
+    delegate :header_footer, :page_setup, :to => :document
     
     private
     
@@ -79,7 +88,9 @@ EOS
       f.puts %{<sheetData>}
       rows.each { |row| f.puts row.to_xml }
       f.puts %{</sheetData>}
-      autofilters.each { |autofilter| f.puts %{<autoFilter ref="#{autofilter}" />} }
+      autofilters.each { |autofilter| f.puts autofilter.to_xml }
+      f.puts page_setup.to_xml
+      f.puts header_footer.to_xml
       f.puts %{</worksheet>}
     end
     

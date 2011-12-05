@@ -3,9 +3,11 @@ require 'fileutils'
 module XlsxWriter
   class Document
     class << self
-      def parts
-        ::Dir[::File.expand_path('../parts/*.rb', __FILE__)].map do |path|
+      def auto
+        ::Dir[::File.expand_path('../generators/*.rb', __FILE__)].map do |path|
           XlsxWriter.const_get ::File.basename(path, '.rb').camelcase
+        end.reject do |klass|
+          klass.const_defined?(:AUTO) and klass.const_get(:AUTO) == false
         end
       end
     end
@@ -15,6 +17,23 @@ module XlsxWriter
       sheet = Sheet.new self, name
       sheets << sheet
       sheet
+    end
+    
+    def page_setup
+      @page_setup ||= PageSetup.new
+    end
+    
+    def header_footer
+      @header_footer ||= HeaderFooter.new self
+    end
+    
+    delegate :header, :footer, :to => :header_footer
+    
+    def add_image(path, width, height)
+      raise ::RuntimeError, "Can't add image, already generated!" if generated?
+      image = Image.new self, path, width, height
+      images << image
+      image
     end
 
     def path
@@ -34,6 +53,10 @@ module XlsxWriter
       @sheets ||= []
     end
     
+    def images
+      @images ||= []
+    end
+    
     def staging_dir
       @staging_dir ||= Utils.tmp_path
       ::FileUtils.mkdir_p @staging_dir
@@ -44,7 +67,8 @@ module XlsxWriter
     
     def generate
       sheets.each(&:generate)
-      (Document.parts - [Sheet]).each do |part|
+      images.each(&:generate)
+      Document.auto.each do |part|
         part.new(self).generate
       end
       @path = Utils.zip staging_dir

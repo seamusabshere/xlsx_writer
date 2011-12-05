@@ -25,7 +25,7 @@ module XlsxWriter
     end
     
     def template_path
-      ::File.expand_path "../parts/#{self.class.name.demodulize.underscore}.erb", __FILE__
+      ::File.expand_path "../generators/#{self.class.name.demodulize.underscore}.erb", __FILE__
     end
     
     def render
