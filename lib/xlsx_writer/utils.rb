@@ -20,7 +20,7 @@ module XlsxWriter
       end
     end
 
-    # use awk to convert CR?LF to CRLF
+    # use awk to convert [CR]LF to CRLF
     def self.unix2dos(path)
       out_path = tmp_path
       ::File.open(out_path, 'wb') do |out|
