@@ -12,7 +12,7 @@ module XlsxWriter
     # zip -r -q #{filename} .
     def self.zip(src_dir)
       out_path = tmp_path('zip', 'zip')
-      child = ::POSIX::Spawn::Child.new 'zip', '--recurse-paths', out_path, '.', :chdir => src_dir
+      child = ::POSIX::Spawn::Child.new 'zip', '-rq', out_path, '.', :chdir => src_dir
       if child.success?
         out_path
       else
