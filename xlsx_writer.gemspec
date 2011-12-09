@@ -1,16 +1,22 @@
 # -*- encoding: utf-8 -*-
-$LOAD_PATH.unshift 'lib'
+$LOAD_PATH.unshift File.expand_path("../lib", __FILE__)
+require 'xlsx_writer/version'
 
 Gem::Specification.new do |s|
   s.name        = "xlsx_writer"
-  s.version     = '0.1.0'
+  s.version     = XlsxWriter::VERSION
   s.authors     = ["Dee Zsombor", "Justin Beck", "Seamus Abshere"]
   s.email       = ["seamus@abshere.net"]
-  s.homepage    = "http://github.com/seamusabshere/xlsx_writer"
-  s.summary     = "Writes XLSX files. Minimal XML and style. Supports autofilters and headers/footers with images and page numbers."
-  s.description = "Writes XLSX files. Minimal XML and style. Supports autofilters and headers/footers with images and page numbers."
-  s.files        = Dir.glob("{bin,lib,test}/**/*") + %w(LICENSE README.markdown Rakefile)
-  s.add_dependency 'activesupport'
-  s.add_dependency "fast_xs", ">= 0.7.3"
-  s.add_dependency 'posix-spawn'
+  s.homepage    = "https://github.com/seamusabshere/xlsx_writer"
+  s.summary     = %{Writes XLSX files. Minimal XML and style. Supports autofilters and headers/footers with images and page numbers.}
+  s.description = %{Writes XLSX files. Minimal XML and style. Supports autofilters and headers/footers with images and page numbers.}
+  
+  s.add_runtime_dependency 'activesupport'
+  s.add_runtime_dependency 'fast_xs'
+  s.add_runtime_dependency 'posix-spawn'
+  
+  s.files         = `git ls-files`.split("\n")
+  s.test_files    = `git ls-files -- {test,features}/*`.split("\n")
+  s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
+  s.require_paths = ["lib"]
 end

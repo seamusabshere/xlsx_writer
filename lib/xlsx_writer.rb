@@ -1,5 +1,7 @@
 require 'active_support/core_ext'
 
+require 'xlsx_writer/version'
+
 module XlsxWriter
   def self.gem_dir
     ::File.join ::File.dirname(__FILE__), 'xlsx_writer'
