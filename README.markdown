@@ -34,14 +34,16 @@ Features not present in simple_xlsx_writer:
       "Name",
       "Occupation",
       "Salary",
-      "Citations"
+      "Citations",
+      "Average citations per paper"
     ])
     sheet1.add_row([
       Date.parse("July 31, 1912"), 
       "Milton Friedman",
       "Economist / Statistician",
       {:type => :Currency, :value => 10_000},
-      500_000
+      500_000,
+      0.31
     ])
     sheet1.add_autofilter 'A1:E1'
 

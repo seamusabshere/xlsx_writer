@@ -8,12 +8,12 @@ module XlsxWriter
         case calculated_type
         when :String
           :inlineStr
-        when :Number, :Date, :Currency
+        when :Number, :Integer, :Decimal, :Date, :Currency
           :n
         when :Boolean
           :b
         else
-          raise ::ArgumentError, "Unknown cell type #{k}"
+          raise ::ArgumentError, "Unknown cell type #{calculated_type}"
         end
       end
       
@@ -22,14 +22,16 @@ module XlsxWriter
         case calculated_type
         when :String
           0
-        when :Number
-          3
+        when :Boolean
+          0 # todo
         when :Currency
           1
         when :Date
           2
-        when :Boolean
-          0 # todo
+        when :Number, :Integer
+          3
+        when :Decimal
+          4
         else
           raise ::ArgumentError, "Unknown cell type #{k}"
         end
@@ -58,6 +60,8 @@ module XlsxWriter
       end
       
       alias :excel_currency :excel_number
+      alias :excel_integer :excel_number
+      alias :excel_decimal :excel_number
       
       # doesn't necessarily work for times yet
       JAN_1_1900 = ::Time.parse('1900-01-01')
@@ -101,9 +105,10 @@ module XlsxWriter
       @character_width ||= case calculated_type
       when :String
         value.to_s.length
-      when :Number
+      when :Number, :Integer, :Decimal
         # -1000000.5
         len = value.round(2).to_s.length
+        len += 2 if calculated_type == :Decimal
         len += 1 if value < 0
         len
       when :Currency
@@ -155,6 +160,10 @@ module XlsxWriter
         data[:type]
       elsif value.is_a?(::Date)
         :Date
+      elsif value.is_a?(::Integer)
+        :Integer
+      elsif value.is_a?(::Float) or (defined?(::BigDecimal) and value.is_a?(::BigDecimal)) or (defined?(::Decimal) and value.is_a?(::Decimal))
+        :Decimal
       elsif value.is_a?(::Numeric)
         :Number
       else
