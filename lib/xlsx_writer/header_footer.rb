@@ -4,8 +4,8 @@ module XlsxWriter
     attr_reader :footer
 
     def initialize
-      @header = HF.new 'oddHeader'
-      @footer = HF.new 'oddFooter'
+      @header = HF.new 'H', 'oddHeader'
+      @footer = HF.new 'F', 'oddFooter'
     end
 
     def to_xml
@@ -21,12 +21,14 @@ module XlsxWriter
     end
     
     class HF
+      attr_reader :id
       attr_reader :tag
       attr_reader :left
       attr_reader :center
       attr_reader :right
       
-      def initialize(tag)
+      def initialize(id, tag)
+        @id = id
         @tag = tag
         @left = LCR.new self, 'L'
         @center = LCR.new self, 'C'
@@ -34,7 +36,7 @@ module XlsxWriter
       end
       
       def to_xml
-        %{<#{tag}>#{parts.map(&:to_s).join}</#{tag}>}
+        %{<#{tag}>#{parts.map(&:code).join}</#{tag}>}
       end
       
       def parts
@@ -51,11 +53,11 @@ module XlsxWriter
 
         attr_accessor :contents
         attr_reader :hf
-        attr_reader :tag
+        attr_reader :id
 
-        def initialize(hf, tag)
+        def initialize(hf, id)
           @hf = hf
-          @tag = tag
+          @id = id
         end
 
         def present?
@@ -67,7 +69,7 @@ module XlsxWriter
         end
         
         def image_id
-          [ tag, hf.tag ].join
+          [ id, hf.id ].join
         end
         
         def render
@@ -93,8 +95,8 @@ module XlsxWriter
           "K000000#{out}"
         end
         
-        def to_s
-          [ '', tag, FONT, SIZE, render ].join('&amp;')
+        def code
+          [ '', id, FONT, SIZE, render ].join('&amp;')
         end
       end
     end

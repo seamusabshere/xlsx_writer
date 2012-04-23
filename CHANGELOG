@@ -4,3 +4,5 @@ unreleased
 
   * Add tests
   * Simply, DRY, and make thread-safe
+  * Use unix_utils instead of our own spawning code
+  * Stop using autoload

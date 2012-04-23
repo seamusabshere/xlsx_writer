@@ -1,39 +1,22 @@
 module XlsxWriter
-  class PageSetup < ::Struct.new(:top, :right, :bottom, :left, :header, :footer, :orientation, :vertical_dpi, :horizontal_dpi)
-    def top
-      self[:top] || 1.0
-    end
-    
-    def right
-      self[:right] || 0.75
-    end
-    
-    def bottom
-      self[:bottom] || 1.0
-    end
-    
-    def left
-      self[:left] || 0.75
-    end
-    
-    def header
-      self[:header] || 0.5
-    end
-    
-    def footer
-      self[:footer] || 0.5
-    end
-    
-    def orientation
-      self[:orientation] || 'landscape'
-    end
-    
-    def vertical_dpi
-      self[:vertical_dpi] || 4294967292
-    end
-    
-    def horizontal_dpi
-      self[:horizontal_dpi] || 4294967292
+  class PageSetup
+    DEFAULT = {
+      :top            => 1.0,
+      :right          => 0.75,
+      :bottom         => 1.0,
+      :left           => 0.75,
+      :header         => 0.5,
+      :footer         => 0.5,
+      :orientation    => 'landscape',
+      :vertical_dpi   => 4294967292,
+      :horizontal_dpi => 4294967292
+    }
+
+    DEFAULT.keys.each do |attr|
+      attr_writer attr
+      define_method attr do
+        instance_variable_get(:"@#{attr}") || DEFAULT[attr]
+      end
     end
     
     def to_xml

@@ -1,30 +1,44 @@
 require 'fileutils'
 
 module XlsxWriter
-  class Image < ::Struct.new(:document, :original_path, :width, :height, :lcr, :croptop, :cropleft)
-    
+  class Image
+    DEFAULT = {
+      :croptop => 0,
+      :cropleft => 0
+    }
     AUTO = false
 
-    def initialize(*)
+    attr_reader :document
+    attr_reader :original_path
+    attr_reader :width
+    attr_reader :height
+    attr_accessor :lcr
+    attr_writer :croptop
+    attr_writer :cropleft
+
+    def initialize(document, original_path, width, height)
+      @document = document
+      @original_path = original_path
+      @width = width
+      @height = height
       @mutex = ::Mutex.new
-      super
     end
 
     def to_xml
       <<-EOS
 <v:shape id="#{id}" o:spid="#{o_spid}" type="#_x0000_t75" style="position:absolute;margin-left:0;margin-top:0;width:#{width}pt;height:#{height}pt;z-index:1">
-  <v:imagedata o:relid="#{rid}" o:title="#{o_title}" croptop=#{croptop} cropleft=#{cropleft}/>
+  <v:imagedata o:relid="#{rid}" o:title="#{o_title}" croptop="#{croptop}" cropleft="#{cropleft}"/>
   <o:lock v:ext="edit" rotation="t"/>
 </v:shape>
 EOS
     end
     
     def croptop
-      self[:croptop] || 0
+      @croptop || DEFAULT[:croptop]
     end
     
     def cropleft
-      self[:cropleft] || 0
+      @cropleft || DEFAULT[:cropleft]
     end
     
     def id
@@ -48,7 +62,7 @@ EOS
       @path || @mutex.synchronize do
         @path ||= begin
           memo = ::File.join document.staging_dir, relative_path
-          ::FileUtils.mkdir_p ::File.dirname(p)
+          ::FileUtils.mkdir_p ::File.dirname(memo)
           ::FileUtils.cp original_path, memo
           @generated = true
           memo
@@ -75,8 +89,6 @@ EOS
     def absolute_path
       "/#{relative_path}"
     end
-
-    private
 
     def relative_path
       "xl/media/image#{ndx}.emf"
