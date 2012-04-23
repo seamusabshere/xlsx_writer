@@ -11,3 +11,4 @@ notes.txt
 *.\#*
 *.rbc
 pkg
+.DS_Store
