@@ -1,13 +1,13 @@
 module XlsxWriter
-  class HeaderFooter < ::Struct.new(:document, :header, :footer)
-    def header
-      self[:header] ||= H.new self
+  class HeaderFooter
+    attr_reader :header
+    attr_reader :footer
+
+    def initialize
+      @header = HF.new 'oddHeader'
+      @footer = HF.new 'oddFooter'
     end
-    
-    def footer
-      self[:footer] ||= F.new self
-    end
-    
+
     def to_xml
       lines = []
       lines << %{<headerFooter>}
@@ -20,21 +20,17 @@ module XlsxWriter
       lines.join("\n")
     end
     
-    class HF < ::Struct.new(:header_footer, :left, :center, :right)
-      def left
-        self[:left] ||= L.new self
-      end
+    class HF
+      attr_reader :tag
+      attr_reader :left
+      attr_reader :center
+      attr_reader :right
       
-      def center
-        self[:center] ||= C.new self
-      end
-      
-      def right
-        self[:right] ||= R.new self
-      end
-      
-      def hf
-        self.class.name.demodulize
+      def initialize(tag)
+        @tag = tag
+        @left = LCR.new self, 'L'
+        @center = LCR.new self, 'C'
+        @right = LCR.new self, 'R'
       end
       
       def to_xml
@@ -49,9 +45,18 @@ module XlsxWriter
         parts.any?(&:has_image?)
       end
       
-      class LCR < ::Struct.new(:hf, :contents)
+      class LCR
         FONT = %{"Arial,Regular"}
         SIZE = 10
+
+        attr_accessor :contents
+        attr_reader :hf
+        attr_reader :tag
+
+        def initialize(hf, tag)
+          @hf = hf
+          @tag = tag
+        end
 
         def present?
           contents.present?
@@ -61,12 +66,8 @@ module XlsxWriter
           ::Array.wrap(contents).any? { |v| v.is_a?(XlsxWriter::Image) }
         end
         
-        def lcr
-          self.class.name.demodulize
-        end
-        
         def image_id
-          [ lcr, hf.hf ].join
+          [ tag, hf.tag ].join
         end
         
         def render
@@ -93,23 +94,8 @@ module XlsxWriter
         end
         
         def to_s
-          [ '', lcr, FONT, SIZE, render ].join('&amp;')
+          [ '', tag, FONT, SIZE, render ].join('&amp;')
         end
-      end
-      
-      class L < LCR; end
-      class C < LCR; end
-      class R < LCR; end
-    end
-
-    class H < HF
-      def tag
-        'oddHeader'
-      end
-    end
-    class F < HF
-      def tag
-        'oddFooter'
       end
     end
   end

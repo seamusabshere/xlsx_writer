@@ -1,6 +1,5 @@
 # -*- encoding: utf-8 -*-
-$LOAD_PATH.unshift File.expand_path("../lib", __FILE__)
-require 'xlsx_writer/version'
+require File.expand_path('../lib/xlsx_writer/version', __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = "xlsx_writer"
@@ -13,7 +12,7 @@ Gem::Specification.new do |s|
   
   s.add_runtime_dependency 'activesupport'
   s.add_runtime_dependency 'fast_xs'
-  s.add_runtime_dependency 'posix-spawn'
+  s.add_runtime_dependency 'unix_utils'
   
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,features}/*`.split("\n")

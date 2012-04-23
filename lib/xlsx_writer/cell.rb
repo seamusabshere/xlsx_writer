@@ -64,7 +64,6 @@ module XlsxWriter
       alias :excel_decimal :excel_number
       
       # doesn't necessarily work for times yet
-      JAN_1_1900 = ::Time.parse('1900-01-01')
       def excel_date(value)
         if value.is_a?(::String)
           ((::Time.parse(str) - JAN_1_1900) / 86_400).round
@@ -76,61 +75,85 @@ module XlsxWriter
       def excel_boolean(value)
         value ? 1 : 0
       end
-    end
-    
-    ABC = ('A'..'Z').to_a
-    
-    attr_reader :row
-    attr_reader :data
-    
-    def initialize(row, data)
-      @row = row
-      @data = data.is_a?(::Hash) ? data.symbolize_keys : data
-    end
-    
-    # width = Truncate([{Number of Characters} * {Maximum Digit Width} + {5 pixel padding}]/{Maximum Digit Width}*256)/256
-    # Using the Calibri font as an example, the maximum digit width of 11 point font size is 7 pixels (at 96 dpi). In fact, each digit is the same width for this font. Therefore if the cell width is 8 characters wide, the value of this attribute shall be Truncate([8*7+5]/7*256)/256 = 8.7109375.
-    MAX_DIGIT_WIDTH = 5
-    MAX_REASONABLE_WIDTH = 75
-    def pixel_width
-      @pixel_width ||= [
-        ((character_width.to_f*MAX_DIGIT_WIDTH+5)/MAX_DIGIT_WIDTH*256)/256,
-        MAX_REASONABLE_WIDTH
-      ].min
-    end
-    
-    DATE_LENGTH = 'YYYY-MM-DD'.length
-    BOOLEAN_LENGTH = 'FALSE'.length
-    def character_width
-      @character_width ||= case calculated_type
-      when :String
-        value.to_s.length
-      when :Number, :Integer, :Decimal
-        # -1000000.5
-        len = value.round(2).to_s.length
-        len += 2 if calculated_type == :Decimal
-        len += 1 if value < 0
-        len
-      when :Currency
-        # (1,000,000.50)
-        len = value.round(2).to_s.length + ::Math.log(value.abs, 1_000).floor
-        len += 2 if value < 0
-        len
-      when :Date
-        DATE_LENGTH
-      when :Boolean
-        BOOLEAN_LENGTH
+
+      # width = Truncate([{Number of Characters} * {Maximum Digit Width} + {5 pixel padding}]/{Maximum Digit Width}*256)/256
+      # Using the Calibri font as an example, the maximum digit width of 11 point font size is 7 pixels (at 96 dpi). In fact, each digit is the same width for this font. Therefore if the cell width is 8 characters wide, the value of this attribute shall be Truncate([8*7+5]/7*256)/256 = 8.7109375.
+      def pixel_width(character_width)
+        [
+          ((character_width.to_f*MAX_DIGIT_WIDTH+5)/MAX_DIGIT_WIDTH*256)/256,
+          MAX_REASONABLE_WIDTH
+        ].min
+      end
+
+      def calculate_type(value)
+        if value.is_a?(::Date)
+          :Date
+        elsif value.is_a?(::Integer)
+          :Integer
+        elsif value.is_a?(::Float) or (defined?(::BigDecimal) and value.is_a?(::BigDecimal)) or (defined?(::Decimal) and value.is_a?(::Decimal))
+          :Decimal
+        elsif value.is_a?(::Numeric)
+          :Number
+        else
+          :String
+        end
+      end
+
+      def character_width(value, calculated_type = nil)
+        calculated_type ||= calculate_type(value)
+        case calculated_type
+        when :String
+          value.to_s.length
+        when :Number, :Integer, :Decimal
+          # -1000000.5
+          len = value.round(2).to_s.length
+          len += 2 if calculated_type == :Decimal
+          len += 1 if value < 0
+          len
+        when :Currency
+          # (1,000,000.50)
+          len = value.round(2).to_s.length + ::Math.log(value.abs, 1_000).floor
+          len += 2 if value < 0
+          len
+        when :Date
+          DATE_LENGTH
+        when :Boolean
+          BOOLEAN_LENGTH
+        end
       end
     end
     
-    def unstyled?
-      !styled?
-    end
+    ABC = ('A'..'Z').to_a
+    MAX_DIGIT_WIDTH = 5
+    MAX_REASONABLE_WIDTH = 75
+    DATE_LENGTH = 'YYYY-MM-DD'.length
+    BOOLEAN_LENGTH = 'FALSE'.length
+    JAN_1_1900 = ::Time.parse '1900-01-01'
     
-    def styled?
-      data.is_a?(::Hash)
+    attr_reader :row
+    attr_reader :value
+    attr_reader :pixel_width
+    attr_reader :excel_type
+    attr_reader :excel_style_number
+    attr_reader :excel_value
+
+    def initialize(row, data)
+      @row = row
+      if data.is_a?(::Hash)
+        data = data.symbolize_keys
+        calculated_type = data[:type]
+        @value = data[:value]
+      else
+        @value = data
+        calculated_type = Cell.calculate_type @value
+      end
+      character_width = Cell.character_width @value, calculated_type
+      @pixel_width = Cell.pixel_width character_width
+      @excel_type = Cell.excel_type calculated_type
+      @excel_style_number = Cell.excel_style_number calculated_type
+      @excel_value = Cell.send "excel_#{calculated_type.to_s.underscore}", @value
     end
-    
+
     def to_xml
       if value.blank?
         %{<c r="#{excel_column_letter}#{row.ndx}" s="0" t="inlineStr" />}
@@ -144,39 +167,6 @@ module XlsxWriter
     # 0 -> A (zero based!)
     def excel_column_letter
       Cell.excel_column_letter row.cells.index(self)
-    end
-    
-    # detect dates here, even if we're not styled
-    def excel_type
-      Cell.excel_type calculated_type
-    end
-    
-    def excel_style_number
-      Cell.excel_style_number calculated_type
-    end
-
-    def calculated_type
-      @calculated_type ||= if styled?
-        data[:type]
-      elsif value.is_a?(::Date)
-        :Date
-      elsif value.is_a?(::Integer)
-        :Integer
-      elsif value.is_a?(::Float) or (defined?(::BigDecimal) and value.is_a?(::BigDecimal)) or (defined?(::Decimal) and value.is_a?(::Decimal))
-        :Decimal
-      elsif value.is_a?(::Numeric)
-        :Number
-      else
-        :String
-      end
-    end
-    
-    def value
-      styled? ? data[:value] : data
-    end
-    
-    def excel_value
-      Cell.send "excel_#{calculated_type.to_s.underscore}", value
     end
   end
 end

@@ -6,8 +6,8 @@ module XlsxWriter
     attr_reader :sheet
 
     def initialize(document, sheet)
-      @document = document
       @sheet = sheet
+      super document
     end
     
     def relative_path

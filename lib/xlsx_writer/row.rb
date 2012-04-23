@@ -21,7 +21,7 @@ module XlsxWriter
     end
     
     def cell_width(x)
-      @width[x] ||= if cell = cells[x]
+      @width[x] ||= if (cell = cells[x])
         cell.pixel_width
       else
         0

@@ -1,0 +1,6 @@
+unreleased
+
+* Enhancements
+
+  * Add tests
+  * Simply, DRY, and make thread-safe

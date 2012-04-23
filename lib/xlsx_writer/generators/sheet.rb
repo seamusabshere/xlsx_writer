@@ -15,10 +15,14 @@ module XlsxWriter
     AUTO = false
     
     attr_reader :name
+    attr_reader :rows
+    attr_reader :autofilters
 
     def initialize(document, name)
-      @document = document
       @name = Sheet.excel_name name
+      @rows = []
+      @autofilters = []
+      super document
     end
     
     def ndx
@@ -38,20 +42,12 @@ module XlsxWriter
       "/#{relative_path}"
     end
 
-    def autofilters
-      @autofilters ||= []
-    end
-
     # specify range like "A1:C1"
     def add_autofilter(range)
       raise ::RuntimeError, "Can't add autofilter, already generated!" if generated?
       autofilters << Autofilter.new(range)
     end
         
-    def rows
-      @rows ||= []
-    end
-    
     def add_row(data)
       raise ::RuntimeError, "Can't add row, already generated!" if generated?
       row = Row.new self, data
@@ -60,18 +56,23 @@ module XlsxWriter
     end
         
     # override Xml method to save memory
-    def generate
-      @path = staging_path
-      ::File.open(@path, 'wb') do |out|
-        to_file out
+    def path
+      @path || @mutex.synchronize do
+        @path ||= begin
+          memo = ::File.join document.staging_dir, relative_path
+          ::FileUtils.mkdir_p ::File.dirname(memo)
+          ::File.open(memo, 'wb') do |f|
+            to_file f
+          end
+          converted = UnixUtils.unix2dos memo
+          ::FileUtils.mv converted, memo
+          SheetRels.new(document, self).path
+          @generated = true
+          memo
+        end
       end
-      Utils.unix2dos @path
-      SheetRels.new(document, self).generate
-      @generated = true
     end
-    
-    delegate :header_footer, :page_setup, :to => :document
-    
+
     private
     
     # not using ERB to save memory
@@ -89,17 +90,25 @@ EOS
       rows.each { |row| f.puts row.to_xml }
       f.puts %{</sheetData>}
       autofilters.each { |autofilter| f.puts autofilter.to_xml }
-      f.puts page_setup.to_xml
-      f.puts header_footer.to_xml
+      f.puts document.page_setup.to_xml
+      f.puts document.header_footer.to_xml
       f.puts %{</worksheet>}
     end
     
     def max_length
-      rows.max_by { |row| row.length }.length
+      if max = rows.max_by { |row| row.length }
+        max.length
+      else
+        1
+      end
     end
     
     def max_cell_width(x)
-      rows.max_by { |row| row.cell_width(x) }.cell_width(x)
+      if max = rows.max_by { |row| row.cell_width(x) }
+        max.cell_width x
+      else
+        Cell.pixel_width 5
+      end
     end
   end
 end

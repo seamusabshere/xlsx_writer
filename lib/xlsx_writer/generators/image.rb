@@ -1,9 +1,15 @@
 require 'fileutils'
+
 module XlsxWriter
   class Image < ::Struct.new(:document, :original_path, :width, :height, :lcr, :croptop, :cropleft)
     
     AUTO = false
-    
+
+    def initialize(*)
+      @mutex = ::Mutex.new
+      super
+    end
+
     def to_xml
       <<-EOS
 <v:shape id="#{id}" o:spid="#{o_spid}" type="#_x0000_t75" style="position:absolute;margin-left:0;margin-top:0;width:#{width}pt;height:#{height}pt;z-index:1">
@@ -28,9 +34,26 @@ EOS
         o_spid #?
       end
     end
-    
+
     def generate
-      ::FileUtils.cp original_path, staging_path
+      path
+      true
+    end
+
+    def generated?
+      @generated == true
+    end
+
+    def path
+      @path || @mutex.synchronize do
+        @path ||= begin
+          memo = ::File.join document.staging_dir, relative_path
+          ::FileUtils.mkdir_p ::File.dirname(p)
+          ::FileUtils.cp original_path, memo
+          @generated = true
+          memo
+        end
+      end
     end
     
     def ndx
@@ -57,12 +80,6 @@ EOS
 
     def relative_path
       "xl/media/image#{ndx}.emf"
-    end
-    
-    def staging_path
-      p = ::File.join document.staging_dir, relative_path
-      ::FileUtils.mkdir_p ::File.dirname(p)
-      p
     end
   end
 end

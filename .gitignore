@@ -12,3 +12,4 @@ notes.txt
 *.rbc
 pkg
 .DS_Store
+Gemfile.lock

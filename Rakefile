@@ -1,13 +1,15 @@
-require 'rubygems'
+#!/usr/bin/env rake
+require "bundler/gem_tasks"
+
 require 'rake'
 require 'rake/testtask'
-
-task :default => [:test]
-
-Rake::TestTask.new do |test|
-  test.libs       << "test"
-  test.test_files =  Dir['test/**/*_test.rb'].sort
-  test.verbose    =  true
+Rake::TestTask.new(:test) do |test|
+  test.libs << 'lib' << 'test'
+  test.pattern = 'test/**/test_*.rb'
+  test.verbose = true
 end
 
+task :default => :test
 
+require 'yard'
+YARD::Rake::YardocTask.new
