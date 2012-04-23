@@ -2,8 +2,10 @@ module XlsxWriter
   class Row
     attr_reader :sheet
     attr_reader :cells
+    attr_reader :width
     
     def initialize(sheet, columns)
+      @width = {}
       @sheet = sheet
       @cells = columns.map do |column|
         Cell.new self, column
@@ -19,7 +21,7 @@ module XlsxWriter
     end
     
     def cell_width(x)
-      if cell = cells[x]
+      @width[x] ||= if cell = cells[x]
         cell.pixel_width
       else
         0
@@ -35,8 +37,5 @@ module XlsxWriter
       ary << %{</row>}
       ary.join
     end
-    
-    extend ::ActiveSupport::Memoizable
-    memoize :cell_width
   end
 end
