@@ -1,4 +1,4 @@
-unreleased
+0.2.0 / 2012-04-23
 
 * Enhancements
 
@@ -6,3 +6,7 @@ unreleased
   * Simply, DRY, and make thread-safe
   * Use unix_utils instead of our own spawning code
   * Stop using autoload
+
+* Bug fixes
+
+  * Wrap croptop and cropleft in quotes
