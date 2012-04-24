@@ -3,6 +3,7 @@
 * Enhancements
 
   * Add tests
+  * Test on MRI 1.8, MRI 1.9, and JRuby 1.6.7+
   * Simply, DRY, and make thread-safe
   * Use unix_utils instead of our own spawning code
   * Stop using autoload

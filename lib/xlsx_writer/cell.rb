@@ -106,19 +106,36 @@ module XlsxWriter
           value.to_s.length
         when :Number, :Integer, :Decimal
           # -1000000.5
-          len = value.round(2).to_s.length
+          len = round(value, 2).to_s.length
           len += 2 if calculated_type == :Decimal
           len += 1 if value < 0
           len
         when :Currency
           # (1,000,000.50)
-          len = value.round(2).to_s.length + ::Math.log(value.abs, 1_000).floor
+          len = round(value, 2).to_s.length + log_base(value.abs, 1e3).floor
           len += 2 if value < 0
           len
         when :Date
           DATE_LENGTH
         when :Boolean
           BOOLEAN_LENGTH
+        end
+      end
+
+      if ::RUBY_VERSION >= '1.9'
+        def round(number, precision)
+          number.round precision
+        end
+        def log_base(number, base)
+          ::Math.log number, base
+        end
+      else
+        def round(number, precision)
+          (number * (10 ** precision).to_i).round / (10 ** precision).to_f
+        end
+        # http://blog.vagmim.com/2010/01/logarithm-to-any-base-in-ruby.html
+        def log_base(number, base)
+          ::Math.log(number) / ::Math.log(base)
         end
       end
     end

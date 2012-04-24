@@ -92,4 +92,19 @@ describe XlsxWriter do
       UnixUtils.md5sum("#{contents}/xl/media/image1.emf").must_equal original
     end
   end
+
+  describe 'Cell' do
+    describe :round do
+      it "works same in 1.8 and 1.9" do
+        XlsxWriter::Cell.round(12.3456, 1).must_equal 12.3
+        XlsxWriter::Cell.round(12.3456, 2).must_equal 12.35
+      end
+    end
+    describe :log_base do
+      it "works same in 1.8 and 1.9" do
+        XlsxWriter::Cell.log_base(4, 1e3).must_be_close_to 0.2
+        XlsxWriter::Cell.log_base(4, 12.345).must_be_close_to 0.552
+      end
+    end
+  end
 end
