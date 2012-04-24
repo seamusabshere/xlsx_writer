@@ -63,10 +63,8 @@ module XlsxWriter
     end
 
     def cleanup
-      ::FileUtils.rm_rf(@staging_dir) if ::File.exist?(@staging_dir.to_s)
-      if generated?
-        ::File.unlink(@path) if ::File.exist?(@path.to_s)
-      end
+      ::FileUtils.rm_rf @staging_dir.to_s
+      ::FileUtils.rm_f @path.to_s
     end
     
     def generate

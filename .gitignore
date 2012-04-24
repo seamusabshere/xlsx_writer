@@ -13,3 +13,4 @@ notes.txt
 pkg
 .DS_Store
 Gemfile.lock
+*.gem

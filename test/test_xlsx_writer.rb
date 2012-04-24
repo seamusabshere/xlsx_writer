@@ -76,20 +76,20 @@ describe XlsxWriter do
       @doc.header.right.contents = 'Reporting Program'
       @doc.footer.center.contents = [ 'Powered by ', center_footer_image ]
       @doc.footer.right.contents = :page_x_of_y
+      @unzipped = UnixUtils.unzip @doc.path
     end
     after do
       @doc.cleanup
+      FileUtils.rm_rf @unzipped
     end
     it "has an autofilter" do
-      contents = UnixUtils.unzip @doc.path
-      File.read("#{contents}/xl/worksheets/sheet1.xml").must_include %{<autoFilter ref="A1:F1" />}
+      File.read("#{@unzipped}/xl/worksheets/sheet1.xml").must_include %{<autoFilter ref="A1:F1" />}
     end
     it "has a header image" do
-      contents = UnixUtils.unzip @doc.path
-      File.read("#{contents}/xl/drawings/_rels/vmlDrawing1.vml.rels").must_include %{<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="/xl/media/image1.emf"/>}
-      File.read("#{contents}/xl/drawings/vmlDrawing1.vml").must_include %{<v:imagedata o:relid="rId1" o:title="image1.emf" croptop="11025f" cropleft="9997f"/>}
+      File.read("#{@unzipped}/xl/drawings/_rels/vmlDrawing1.vml.rels").must_include %{<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="/xl/media/image1.emf"/>}
+      File.read("#{@unzipped}/xl/drawings/vmlDrawing1.vml").must_include %{<v:imagedata o:relid="rId1" o:title="image1.emf" croptop="11025f" cropleft="9997f"/>}
       original = UnixUtils.md5sum File.expand_path("../support/image1.emf", __FILE__)
-      UnixUtils.md5sum("#{contents}/xl/media/image1.emf").must_equal original
+      UnixUtils.md5sum("#{@unzipped}/xl/media/image1.emf").must_equal original
     end
   end
 
