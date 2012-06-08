@@ -1,3 +1,17 @@
+0.2.1 / 2012-06-08
+
+* Bug fixes
+
+  * Clean up after tests (don't leave junk files around)
+
+* Enhancements
+
+  * Sorting by autofilter doesn't crash any more! (at least on Office for Mac 2011)
+
+* Developer notes
+
+  * Added repack.rb and unpack.rb, which are useful for trying out incremental changes to xlsx files
+
 0.2.0 / 2012-04-23
 
 * Enhancements
