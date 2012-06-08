@@ -29,6 +29,10 @@ module XlsxWriter
       document.sheets.index(self) + 1
     end
 
+    def local_id
+      ndx - 1
+    end
+
     # +1 because styles.xml occupies the first spot
     def rid
       "rId#{ndx + 1}"
@@ -45,7 +49,7 @@ module XlsxWriter
     # specify range like "A1:C1"
     def add_autofilter(range)
       raise ::RuntimeError, "Can't add autofilter, already generated!" if generated?
-      autofilters << Autofilter.new(range)
+      autofilters << Autofilter.new(self, range)
     end
         
     def add_row(data)

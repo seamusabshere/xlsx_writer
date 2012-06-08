@@ -9,4 +9,11 @@
     <sheet name="<%= sheet.name %>" sheetId="<%= sheet.ndx %>" r:id="<%= sheet.rid %>"/>
   <% end %>
   </sheets>
+  <definedNames>
+  <% document.sheets.each do |sheet| %>
+    <% sheet.autofilters.each do |autofilter| %>
+    <definedName name="_xlnm._FilterDatabase" localSheetId="<%= sheet.local_id %>" hidden="1"><%= autofilter.defined_name %></definedName>
+    <% end %>
+  <% end %>
+  </definedNames>
 </workbook>
