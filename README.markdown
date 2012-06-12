@@ -82,4 +82,4 @@ Features not present in simple_xlsx_writer:
 
 ## Copyright
 
-Copyright (c) 2012 Brighter Planet. See LICENSE for details.
+Copyright (c) 2012 Dee Zsombor, Justin Beck, Seamus Abshere. See LICENSE for details.
