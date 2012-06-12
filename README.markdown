@@ -2,6 +2,12 @@
 
 Writes (doesn't read or modify) XLSX files.
 
+## Real-world usage
+
+<p><a href="http://brighterplanet.com"><img src="https://s3.amazonaws.com/static.brighterplanet.com/assets/logos/flush-left/inline/green/rasterized/brighter_planet-160-transparent.png" alt="Brighter Planet logo"/></a></p>
+
+We use `xlsx_writer` for [sustainability analytics at Brighter Planet](http://brighterplanet.com/case_studies).
+
 ## Credit
 
 Based on the [original simple\_xlsx\_writer gem](https://github.com/harvesthq/simple_xlsx_writer) and [patches by mumboe](https://github.com/mumboe/simple_xlsx_writer)
@@ -74,3 +80,6 @@ Features not present in simple_xlsx_writer:
     # don't forget
     doc.cleanup
 
+## Copyright
+
+Copyright (c) 2012 Brighter Planet. See LICENSE for details.
