@@ -18,8 +18,8 @@ module XlsxWriter
       end
       
       # TODO make a class for this
-      def excel_style_number(calculated_type)
-        case calculated_type
+      def excel_style_number(calculated_type, faded = false)
+        i = case calculated_type
         when :String
           0
         when :Boolean
@@ -34,6 +34,11 @@ module XlsxWriter
           4
         else
           raise ::ArgumentError, "Unknown cell type #{k}"
+        end
+        if faded
+          i * 2 + 1
+        else
+          i * 2
         end
       end
       
@@ -158,16 +163,18 @@ module XlsxWriter
       @row = row
       if data.is_a?(::Hash)
         data = data.symbolize_keys
-        calculated_type = data[:type]
         @value = data[:value]
+        faded = data[:faded]
+        calculated_type = data[:type] || Cell.calculate_type(@value)
       else
         @value = data
+        faded = false
         calculated_type = Cell.calculate_type @value
       end
       character_width = Cell.character_width @value, calculated_type
       @pixel_width = Cell.pixel_width character_width
       @excel_type = Cell.excel_type calculated_type
-      @excel_style_number = Cell.excel_style_number calculated_type
+      @excel_style_number = Cell.excel_style_number calculated_type, faded
       @excel_value = Cell.send "excel_#{calculated_type.to_s.underscore}", @value
     end
 

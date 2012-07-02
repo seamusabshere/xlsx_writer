@@ -4,8 +4,14 @@
     <numFmt numFmtId="164" formatCode="0.00" />
   </numFmts>
 
-  <fonts count="1">
+  <fonts count="2">
     <font>
+      <sz val="10"/>
+      <name val="Arial"/>
+    </font>
+    <!-- faded -->
+    <font>
+      <color rgb="FFCCCCCC"/>
       <sz val="10"/>
       <name val="Arial"/>
     </font>
@@ -26,26 +32,21 @@
     <xf builtinId="4" />
   </cellStyleXfs>
 
-  <cellXfs count="5">
+  <cellXfs count="10">
     <!-- general -->
-    <xf numFmtId="0" fontId="0">
-      <alignment vertical="top" horizontal="left" />
-    </xf>
+    <xf numFmtId="0" fontId="0"><alignment vertical="top" horizontal="left" /></xf>
+    <xf numFmtId="0" fontId="1"><alignment vertical="top" horizontal="left" /></xf>
     <!-- currency (really accounting) -->
-    <xf numFmtId="39" fontId="0" xfId="1">
-      <alignment vertical="top" horizontal="right" />
-    </xf>
+    <xf numFmtId="39" fontId="0" xfId="1"><alignment vertical="top" horizontal="right" /></xf>
+    <xf numFmtId="39" fontId="1" xfId="1"><alignment vertical="top" horizontal="right" /></xf>
     <!-- date -->
-    <xf numFmtId="14" fontId="0">
-      <alignment vertical="top" horizontal="left" />
-    </xf>
+    <xf numFmtId="14" fontId="0"><alignment vertical="top" horizontal="left" /></xf>
+    <xf numFmtId="14" fontId="1"><alignment vertical="top" horizontal="left" /></xf>
     <!-- integer -->
-    <xf numFmtId="0" fontId="0">
-      <alignment vertical="top" horizontal="right" />
-    </xf>
+    <xf numFmtId="0" fontId="0"><alignment vertical="top" horizontal="right" /></xf>
+    <xf numFmtId="0" fontId="1"><alignment vertical="top" horizontal="right" /></xf>
     <!-- float/decimal/etc. -->
-    <xf numFmtId="164" fontId="0">
-      <alignment vertical="top" horizontal="right" />
-    </xf>
+    <xf numFmtId="164" fontId="0"><alignment vertical="top" horizontal="right" /></xf>
+    <xf numFmtId="164" fontId="1"><alignment vertical="top" horizontal="right" /></xf>
   </cellXfs>
 </styleSheet>
