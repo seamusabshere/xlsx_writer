@@ -100,7 +100,7 @@ module XlsxWriter
           :Decimal
         when Numeric
           :Number
-        when TrueClass, FalseClass
+        when TrueClass, FalseClass, TRUE_FALSE_PATTERN
           :Boolean
         else
           if (defined?(Decimal) and value.is_a?(Decimal)) or (defined?(BigDecimal) and value.is_a?(BigDecimal))
@@ -158,6 +158,7 @@ module XlsxWriter
     DATE_LENGTH = 'YYYY-MM-DD'.length
     BOOLEAN_LENGTH = 'FALSE'.length + 1
     JAN_1_1900 = ::Time.parse '1900-01-01'
+    TRUE_FALSE_PATTERN = %r{^true|false$}i
     
     attr_reader :row
     attr_reader :value
