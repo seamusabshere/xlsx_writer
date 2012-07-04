@@ -91,16 +91,23 @@ module XlsxWriter
       end
 
       def calculate_type(value)
-        if value.is_a?(::Date)
+        case value
+        when Date
           :Date
-        elsif value.is_a?(::Integer)
+        when Integer
           :Integer
-        elsif value.is_a?(::Float) or (defined?(::BigDecimal) and value.is_a?(::BigDecimal)) or (defined?(::Decimal) and value.is_a?(::Decimal))
+        when Float
           :Decimal
-        elsif value.is_a?(::Numeric)
+        when Numeric
           :Number
+        when TrueClass, FalseClass
+          :Boolean
         else
-          :String
+          if (defined?(Decimal) and value.is_a?(Decimal)) or (defined?(BigDecimal) and value.is_a?(BigDecimal))
+            :Decimal
+          else
+            :String
+          end
         end
       end
 
@@ -149,7 +156,7 @@ module XlsxWriter
     MAX_DIGIT_WIDTH = 5
     MAX_REASONABLE_WIDTH = 75
     DATE_LENGTH = 'YYYY-MM-DD'.length
-    BOOLEAN_LENGTH = 'FALSE'.length
+    BOOLEAN_LENGTH = 'FALSE'.length + 1
     JAN_1_1900 = ::Time.parse '1900-01-01'
     
     attr_reader :row
@@ -179,7 +186,7 @@ module XlsxWriter
     end
 
     def to_xml
-      if value.blank?
+      if value.nil? or (value.is_a?(String) and value.empty?)
         %{<c r="#{excel_column_letter}#{row.ndx}" s="0" t="inlineStr" />}
       elsif excel_type == :inlineStr
         %{<c r="#{excel_column_letter}#{row.ndx}" s="#{excel_style_number}" t="#{excel_type}"><is><t>#{excel_value}</t></is></c>}

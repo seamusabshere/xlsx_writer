@@ -1,5 +1,9 @@
 unreleased
 
+* Bug fixes
+
+  * Properly render FALSE boolean cells
+
 * Enhancements
 
   * Add :faded option for cells
