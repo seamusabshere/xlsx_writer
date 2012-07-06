@@ -28,6 +28,15 @@ module XlsxWriter
       @header_footer = HeaderFooter.new
       @mutex = ::Mutex.new
     end
+
+    # Instead of TRUE or FALSE, show TRUE and blank if false
+    def quiet_booleans!
+      @quiet_booleans = true
+    end
+
+    def quiet_booleans?
+      @quiet_booleans == true
+    end
     
     def add_sheet(name)
       raise ::RuntimeError, "Can't add sheet, already generated!" if generated?

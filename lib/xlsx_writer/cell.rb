@@ -187,7 +187,7 @@ module XlsxWriter
     end
 
     def to_xml
-      if value.nil? or (value.is_a?(String) and value.empty?)
+      if value.nil? or (value.is_a?(String) and value.empty?) or (value == false and quiet_booleans?)
         %{<c r="#{excel_column_letter}#{row.ndx}" s="0" t="inlineStr" />}
       elsif excel_type == :inlineStr
         %{<c r="#{excel_column_letter}#{row.ndx}" s="#{excel_style_number}" t="#{excel_type}"><is><t>#{excel_value}</t></is></c>}
@@ -195,10 +195,17 @@ module XlsxWriter
         %{<c r="#{excel_column_letter}#{row.ndx}" s="#{excel_style_number}" t="#{excel_type}"><v>#{excel_value}</v></c>}
       end
     end
-    
+
     # 0 -> A (zero based!)
     def excel_column_letter
       Cell.excel_column_letter row.cells.index(self)
+    end
+
+    private
+
+    def quiet_booleans?
+      return @quiet_booleans if defined?(@quiet_booleans)
+      @quiet_booleans = row.sheet.document.quiet_booleans?
     end
   end
 end

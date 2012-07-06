@@ -8,6 +8,8 @@ describe XlsxWriter do
       @sheet1 = @doc.add_sheet("People")
       @sheet1.add_row(['header1', 'header2'])
       @sheet1.add_row(['hello', 'world'])
+      @sheet1.add_row(['affirmative', true])
+      @sheet1.add_row(['negative', false])
     end
     after do
       @doc.cleanup
@@ -17,7 +19,7 @@ describe XlsxWriter do
       File.extname(@doc.path).must_equal '.xlsx'
     end
     it "is a readable xlsx" do
-      RemoteTable.new("file://#{@doc.path}", :format => :xlsx).rows.first.must_equal('header1' => 'hello', 'header2' => 'world')
+      RemoteTable.new(@doc.path, :format => :xlsx).rows.first.must_equal('header1' => 'hello', 'header2' => 'world')
     end
     it "only generates once" do
       @doc.generate
@@ -45,6 +47,29 @@ describe XlsxWriter do
       @doc.generated?.must_equal false
       @doc.path
       @doc.generated?.must_equal true
+    end
+  end
+
+  describe "quiet booleans" do
+    before do
+      @doc = XlsxWriter::Document.new
+      @sheet1 = @doc.add_sheet("QuietBooleans")
+      @sheet1.add_row(['affirmative', 'negative'])
+      @sheet1.add_row([true, false])
+    end
+    after do
+      @doc.cleanup
+    end
+    it "shows TRUE or FALSE for booleans by default" do
+      t = RemoteTable.new(@doc.path, :format => :xlsx)
+      t[0]['affirmative'].must_equal 'TRUE'
+      t[0]['negative'].must_equal 'FALSE'
+    end
+    it "shows TRUE or blank for false if quiet booleans is enabled" do
+      @doc.quiet_booleans!
+      t = RemoteTable.new(@doc.path, :format => :xlsx)
+      t[0]['affirmative'].must_equal 'TRUE'
+      t[0]['negative'].must_equal ''
     end
   end
 
