@@ -73,6 +73,29 @@ describe XlsxWriter do
     end
   end
 
+  describe "freeze pane under first (header) row" do
+    before do
+      @doc = XlsxWriter::Document.new
+      @sheet1 = @doc.add_sheet("Freeze")
+      @sheet1.add_row([1, 2])
+      @sheet1.add_row([3, 4])
+    end
+    after do
+      @doc.cleanup
+    end
+    it "doesn't freeze by default" do
+      dir = UnixUtils.unzip @doc.path
+      File.read("#{dir}/xl/worksheets/sheet1.xml").wont_include 'pane'
+      FileUtils.rm_rf dir
+    end
+    it "shows TRUE or blank for false if quiet booleans is enabled" do
+      @doc.freeze!
+      dir = UnixUtils.unzip @doc.path
+      File.read("#{dir}/xl/worksheets/sheet1.xml").must_include 'pane'
+      FileUtils.rm_rf dir
+    end
+  end
+
   describe "example with autofilter, header image, and footer text" do
     before do
       @doc = XlsxWriter::Document.new

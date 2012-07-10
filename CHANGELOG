@@ -3,6 +3,7 @@ unreleased
 * Enhancements
 
   * Allow "quiet booleans" in case you don't want FALSE everywhere
+  * Allow freezing pane after the first (header) row
 
 0.2.2 / 2012-07-04
 

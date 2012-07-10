@@ -84,8 +84,17 @@ module XlsxWriter
       f.write <<-EOS
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
-<cols>
 EOS
+      if document.freeze?
+        f.write <<-EOS
+<sheetViews>
+  <sheetView workbookViewId="0">
+    <pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/>
+  </sheetView>
+</sheetViews>
+EOS
+      end
+      f.write %{<cols>}
       (0..max_length-1).each do |x|
         f.write %{<col min="#{x+1}" max="#{x+1}" width="#{max_cell_width(x)}" bestFit="1" customWidth="1" />}
       end
