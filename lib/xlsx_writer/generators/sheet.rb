@@ -81,22 +81,22 @@ module XlsxWriter
     
     # not using ERB to save memory
     def to_file(f)
-      f.puts <<-EOS
+      f.write <<-EOS
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
 <cols>
 EOS
       (0..max_length-1).each do |x|
-        f.puts %{<col min="#{x+1}" max="#{x+1}" width="#{max_cell_width(x)}" bestFit="1" customWidth="1" />}
+        f.write %{<col min="#{x+1}" max="#{x+1}" width="#{max_cell_width(x)}" bestFit="1" customWidth="1" />}
       end
-      f.puts %{</cols>}
-      f.puts %{<sheetData>}
-      rows.each { |row| f.puts row.to_xml }
-      f.puts %{</sheetData>}
-      autofilters.each { |autofilter| f.puts autofilter.to_xml }
-      f.puts document.page_setup.to_xml
-      f.puts document.header_footer.to_xml
-      f.puts %{</worksheet>}
+      f.write %{</cols>}
+      f.write %{<sheetData>}
+      rows.each { |row| f.write row.to_xml }
+      f.write %{</sheetData>}
+      autofilters.each { |autofilter| f.write autofilter.to_xml }
+      f.write document.page_setup.to_xml
+      f.write document.header_footer.to_xml
+      f.write %{</worksheet>}
     end
     
     def max_length
