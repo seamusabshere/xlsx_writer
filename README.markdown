@@ -25,11 +25,21 @@ Features not present in simple_xlsx_writer:
 * header and footer, with support for images (.emf only) and page numbers
 * fits columns to text
 
+## Wishlist
+
+1. Optional shared string optimizer
+
 ## Example
 
     require 'xlsx_writer'
     
     doc = XlsxWriter::Document.new
+
+    # show TRUE for true but a blank cell instead of FALSE
+    doc.quiet_booleans!
+
+    # freeze pane underneath the first (header) row
+    doc.freeze!
     
     sheet1 = doc.add_sheet("People")
     
