@@ -37,11 +37,11 @@ Features not present in simple_xlsx_writer:
 
     # show TRUE for true but a blank cell instead of FALSE
     doc.quiet_booleans!
-
-    # freeze pane underneath the first (header) row
-    doc.freeze!
     
     sheet1 = doc.add_sheet("People")
+
+    # freeze pane underneath the first (header) row
+    sheet1.freeze_top_left = 'A2'
     
     # DATA
     
