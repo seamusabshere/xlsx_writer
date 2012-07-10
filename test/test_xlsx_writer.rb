@@ -73,7 +73,7 @@ describe XlsxWriter do
     end
   end
 
-  describe "freeze pane under first (header) row" do
+  describe "freeze pane under a certain row" do
     before do
       @doc = XlsxWriter::Document.new
       @sheet1 = @doc.add_sheet("Freeze")
@@ -89,9 +89,11 @@ describe XlsxWriter do
       FileUtils.rm_rf dir
     end
     it "shows TRUE or blank for false if quiet booleans is enabled" do
-      @doc.freeze!
+      @sheet1.freeze_top_left = 'A3'
       dir = UnixUtils.unzip @doc.path
-      File.read("#{dir}/xl/worksheets/sheet1.xml").must_include 'pane'
+      xml = File.read("#{dir}/xl/worksheets/sheet1.xml")
+      xml.must_include 'topLeftCell="A3"'
+      xml.must_include 'ySplit="2"'
       FileUtils.rm_rf dir
     end
   end

@@ -38,15 +38,6 @@ module XlsxWriter
       @quiet_booleans == true
     end
 
-    # Freeze the pane under the first (header) row
-    def freeze!
-      @freeze_pane = true
-    end
-
-    def freeze?
-      @freeze_pane == true
-    end
-    
     def add_sheet(name)
       raise ::RuntimeError, "Can't add sheet, already generated!" if generated?
       sheet = Sheet.new self, name

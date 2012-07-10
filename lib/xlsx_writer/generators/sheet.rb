@@ -18,6 +18,9 @@ module XlsxWriter
     attr_reader :rows
     attr_reader :autofilters
 
+    # Freeze the pane under this top left cell
+    attr_accessor :freeze_top_left
+
     def initialize(document, name)
       @name = Sheet.excel_name name
       @rows = []
@@ -79,17 +82,25 @@ module XlsxWriter
 
     private
     
+    def y_split
+      if freeze_top_left =~ /(\d+)$/
+        $1.to_i - 1
+      else
+        raise "freeze_top_left must be like 'A3', was #{freeze_top_left}"
+      end
+    end
+
     # not using ERB to save memory
     def to_file(f)
       f.write <<-EOS
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
 EOS
-      if document.freeze?
+      if freeze_top_left
         f.write <<-EOS
 <sheetViews>
   <sheetView workbookViewId="0">
-    <pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/>
+    <pane ySplit="#{y_split}" topLeftCell="#{freeze_top_left}" activePane="bottomLeft" state="frozen"/>
   </sheetView>
 </sheetViews>
 EOS
