@@ -1,3 +1,9 @@
+0.3.2 / 2012-07-12
+
+* Bug fixes
+
+  * "Wrong date - Fixed 2 days missing because of Lotus 123 leap year bug and the way calculation is done" - thanks @igagnidz !
+
 0.3.1 / 2012-07-10
 
 * Enhancements
