@@ -157,7 +157,7 @@ module XlsxWriter
     MAX_REASONABLE_WIDTH = 75
     DATE_LENGTH = 'YYYY-MM-DD'.length
     BOOLEAN_LENGTH = 'FALSE'.length + 1
-    JAN_1_1900 = ::Time.parse '1900-01-01'
+    JAN_1_1900 = ::Time.parse('1899-12-30 00:00:00 UTC')
     TRUE_FALSE_PATTERN = %r{^true|false$}i
     
     attr_reader :row
