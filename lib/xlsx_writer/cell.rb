@@ -188,7 +188,7 @@ module XlsxWriter
 
     def to_xml
       if value.nil? or (value.is_a?(String) and value.empty?) or (value == false and quiet_booleans?)
-        %{<c r="#{excel_column_letter}#{row.ndx}" s="0" t="inlineStr" />}
+        %{<c r="#{excel_column_letter}#{row.ndx}" s="0" t="s" />}
       elsif excel_type == :string
         unless document.shared_strings.has_key?(value)
           document.shared_strings[value] = document.shared_strings.count
