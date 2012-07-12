@@ -7,7 +7,7 @@ module XlsxWriter
       def excel_type(calculated_type)
         case calculated_type
         when :String
-          :inlineStr
+          :string
         when :Number, :Integer, :Decimal, :Date, :Currency
           :n
         when :Boolean
@@ -188,9 +188,14 @@ module XlsxWriter
 
     def to_xml
       if value.nil? or (value.is_a?(String) and value.empty?) or (value == false and quiet_booleans?)
-        %{<c r="#{excel_column_letter}#{row.ndx}" s="0" t="inlineStr" />}
-      elsif excel_type == :inlineStr
-        %{<c r="#{excel_column_letter}#{row.ndx}" s="#{excel_style_number}" t="#{excel_type}"><is><t>#{excel_value}</t></is></c>}
+        %{<c r="#{excel_column_letter}#{row.ndx}" s="0" t="s" />}
+      elsif excel_type == :string
+        unless document.shared_strings.has_key?(value)
+          document.shared_strings[value] = document.shared_strings.count
+        end
+
+        string_index = document.shared_strings[value]
+        %{<c r="#{excel_column_letter}#{row.ndx}" s="#{excel_style_number}" t="s"><v>#{string_index}</v></c>}
       else
         %{<c r="#{excel_column_letter}#{row.ndx}" s="#{excel_style_number}" t="#{excel_type}"><v>#{excel_value}</v></c>}
       end
@@ -202,6 +207,10 @@ module XlsxWriter
     end
 
     private
+
+    def document
+      row.sheet.document
+    end
 
     def quiet_booleans?
       return @quiet_booleans if defined?(@quiet_booleans)

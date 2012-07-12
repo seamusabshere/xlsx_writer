@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId0" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings" Target="sharedstrings.xml"/>
   <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="/xl/styles.xml"/>
   <% document.sheets.each do |sheet| %>
   <Relationship Id="<%= sheet.rid %>" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="<%= sheet.absolute_path %>"/>

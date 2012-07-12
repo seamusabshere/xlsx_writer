@@ -17,6 +17,7 @@ module XlsxWriter
     attr_reader :images
     attr_reader :page_setup
     attr_reader :header_footer
+    attr_reader :shared_strings
 
     def initialize
       staging_dir = ::UnixUtils.tmp_path 'xlsx_writer'
@@ -26,6 +27,7 @@ module XlsxWriter
       @images = []
       @page_setup = PageSetup.new
       @header_footer = HeaderFooter.new
+      @shared_strings = {}
       @mutex = ::Mutex.new
     end
 
