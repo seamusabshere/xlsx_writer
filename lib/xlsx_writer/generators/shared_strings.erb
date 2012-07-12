@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="<%= document.shared_strings.count %>" uniquecount="<%= document.shared_strings.count %>">
+  <% document.shared_strings.each do |string, index| %>
+  <si>
+    <t><%= string.fast_xs %></t>
+  </si>
+  <% end %>
+</sst>
