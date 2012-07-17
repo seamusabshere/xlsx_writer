@@ -1,4 +1,4 @@
-module XlsxWriter
+class XlsxWriter
   class HeaderFooter
     attr_reader :header
     attr_reader :footer

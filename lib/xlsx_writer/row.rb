@@ -1,4 +1,4 @@
-module XlsxWriter
+class XlsxWriter
   class Row
     attr_reader :sheet
     attr_reader :cells

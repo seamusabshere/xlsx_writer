@@ -1,4 +1,4 @@
-module XlsxWriter
+class XlsxWriter
   class PageSetup
     DEFAULT = {
       :top            => 1.0,

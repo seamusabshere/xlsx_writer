@@ -1,7 +1,7 @@
 require 'erb'
 require 'fileutils'
 
-module XlsxWriter
+class XlsxWriter
   class Xml
     class << self
       def auto

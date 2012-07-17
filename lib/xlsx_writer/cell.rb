@@ -1,6 +1,6 @@
 require 'fast_xs'
 
-module XlsxWriter
+class XlsxWriter
   class Cell
     class << self
       # TODO make a class for this

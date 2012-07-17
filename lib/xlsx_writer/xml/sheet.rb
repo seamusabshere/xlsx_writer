@@ -1,6 +1,6 @@
 require 'fast_xs'
 
-module XlsxWriter
+class XlsxWriter
   class Sheet < Xml
     class << self
       def excel_name(value)
