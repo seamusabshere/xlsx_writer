@@ -2,16 +2,6 @@ require 'fileutils'
 
 module XlsxWriter
   class Document
-    class << self
-      def auto
-        ::Dir[::File.expand_path('../generators/*.rb', __FILE__)].map do |path|
-          XlsxWriter.const_get ::File.basename(path, '.rb').camelcase
-        end.reject do |klass|
-          klass.const_defined?(:AUTO) and klass.const_get(:AUTO) == false
-        end
-      end
-    end
-
     attr_reader :staging_dir
     attr_reader :sheets
     attr_reader :images
@@ -61,7 +51,7 @@ module XlsxWriter
         @path ||= begin 
           sheets.each(&:generate)
           images.each(&:generate)
-          Document.auto.each do |part|
+          Xml.auto.each do |part|
             part.new(self).generate
           end
           with_zip_extname = ::UnixUtils.zip staging_dir

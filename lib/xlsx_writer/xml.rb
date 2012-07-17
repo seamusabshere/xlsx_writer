@@ -3,6 +3,14 @@ require 'fileutils'
 
 module XlsxWriter
   class Xml
+    class << self
+      def auto
+        descendants.reject do |klass|
+          klass.const_defined?(:AUTO) and klass.const_get(:AUTO) == false
+        end
+      end
+    end
+    
     attr_reader :document
 
     def initialize(document)
@@ -36,7 +44,7 @@ module XlsxWriter
     end
         
     def template_path
-      ::File.expand_path "../generators/#{self.class.name.demodulize.underscore}.erb", __FILE__
+      ::File.expand_path "../xml/#{self.class.name.demodulize.underscore}.erb", __FILE__
     end
     
     def render
