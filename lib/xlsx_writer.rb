@@ -8,9 +8,9 @@ require 'xlsx_writer/row'
 require 'xlsx_writer/header_footer'
 require 'xlsx_writer/autofilter'
 require 'xlsx_writer/page_setup'
+require 'xlsx_writer/sheet'
 require 'xlsx_writer/xml'
 # manual
-require 'xlsx_writer/xml/sheet'
 require 'xlsx_writer/xml/sheet_rels'
 require 'xlsx_writer/xml/image'
 require 'xlsx_writer/xml/shared_strings'
@@ -34,15 +34,15 @@ class XlsxWriter
   attr_reader :shared_strings
 
   def initialize
-    staging_dir = ::UnixUtils.tmp_path 'xlsx_writer'
-    ::FileUtils.mkdir_p staging_dir
+    @mutex = Mutex.new
+    staging_dir = UnixUtils.tmp_path 'xlsx_writer'
+    FileUtils.mkdir_p staging_dir
     @staging_dir = staging_dir
     @sheets = []
     @images = []
     @page_setup = PageSetup.new
     @header_footer = HeaderFooter.new
-    @shared_strings = {}
-    @mutex = ::Mutex.new
+    @shared_strings = {}#SharedStrings.new(self)
   end
 
   # Instead of TRUE or FALSE, show TRUE and blank if false
@@ -55,8 +55,9 @@ class XlsxWriter
   end
 
   def add_sheet(name)
-    raise ::RuntimeError, "Can't add sheet, already generated!" if generated?
-    sheet = Sheet.new self, name
+    raise RuntimeError, "Can't add sheet, already generated!" if generated?
+    ndx = sheets.length + 1
+    sheet = Sheet.new self, name, ndx
     sheets << sheet
     sheet
   end
@@ -64,7 +65,7 @@ class XlsxWriter
   delegate :header, :footer, :to => :header_footer
   
   def add_image(path, width, height)
-    raise ::RuntimeError, "Can't add image, already generated!" if generated?
+    raise RuntimeError, "Can't add image, already generated!" if generated?
     image = Image.new self, path, width, height
     images << image
     image
@@ -72,15 +73,14 @@ class XlsxWriter
 
   def path
     @path || @mutex.synchronize do
-      @path ||= begin 
-        sheets.each(&:generate)
-        images.each(&:generate)
-        Xml.auto.each do |part|
-          part.new(self).generate
-        end
-        with_zip_extname = ::UnixUtils.zip staging_dir
+      @path ||= begin
+        sheets.each { |sheet| sheet.generate }
+        images.each { |image| image.generate }
+        # shared_strings.generate
+        Xml.auto.each { |part| part.new(self).generate }
+        with_zip_extname = UnixUtils.zip staging_dir
         with_xlsx_extname = with_zip_extname.sub(/.zip$/, '.xlsx')
-        ::FileUtils.mv with_zip_extname, with_xlsx_extname
+        FileUtils.mv with_zip_extname, with_xlsx_extname
         @generated = true
         with_xlsx_extname
       end
@@ -88,8 +88,12 @@ class XlsxWriter
   end
 
   def cleanup
-    ::FileUtils.rm_rf @staging_dir.to_s
-    ::FileUtils.rm_f @path.to_s
+    @mutex.synchronize do
+      FileUtils.rm_rf @staging_dir
+      FileUtils.rm_f @path
+      @path = nil
+      @generated = false
+    end
   end
   
   def generate

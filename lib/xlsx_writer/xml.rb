@@ -14,8 +14,8 @@ class XlsxWriter
     attr_reader :document
 
     def initialize(document)
+      @mutex = Mutex.new
       @document = document
-      @mutex = ::Mutex.new
     end
 
     def generate

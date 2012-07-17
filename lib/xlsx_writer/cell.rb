@@ -160,6 +160,7 @@ class XlsxWriter
     JAN_1_1900 = ::Time.parse('1899-12-30 00:00:00 UTC')
     TRUE_FALSE_PATTERN = %r{^true|false$}i
     
+    attr_reader :document
     attr_reader :row
     attr_reader :value
     attr_reader :pixel_width
@@ -168,6 +169,7 @@ class XlsxWriter
     attr_reader :excel_value
 
     def initialize(row, data)
+      @document = row.sheet.document
       @row = row
       if data.is_a?(::Hash)
         data = data.symbolize_keys
@@ -187,7 +189,7 @@ class XlsxWriter
     end
 
     def to_xml
-      if value.nil? or (value.is_a?(String) and value.empty?) or (value == false and quiet_booleans?)
+      if value.nil? or (value.is_a?(String) and value.empty?) or (value == false and document.quiet_booleans?)
         %{<c r="#{excel_column_letter}#{row.ndx}" s="0" t="s" />}
       elsif excel_type == :string
         unless document.shared_strings.has_key?(value)
@@ -204,17 +206,6 @@ class XlsxWriter
     # 0 -> A (zero based!)
     def excel_column_letter
       Cell.excel_column_letter row.cells.index(self)
-    end
-
-    private
-
-    def document
-      row.sheet.document
-    end
-
-    def quiet_booleans?
-      return @quiet_booleans if defined?(@quiet_booleans)
-      @quiet_booleans = row.sheet.document.quiet_booleans?
     end
   end
 end
