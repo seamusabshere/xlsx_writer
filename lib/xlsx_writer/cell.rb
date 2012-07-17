@@ -42,6 +42,7 @@ class XlsxWriter
         end
       end
       
+      # 0 -> A (zero based!)
       def excel_column_letter(i)
         result = []
         while i >= 26 do
@@ -161,16 +162,20 @@ class XlsxWriter
     TRUE_FALSE_PATTERN = %r{^true|false$}i
     
     attr_reader :document
-    attr_reader :row
+    attr_reader :shared_strings
+    attr_reader :x
+    attr_reader :y
     attr_reader :value
     attr_reader :pixel_width
     attr_reader :excel_type
     attr_reader :excel_style_number
     attr_reader :excel_value
 
-    def initialize(row, data)
+    def initialize(row, data, x, y)
       @document = row.sheet.document
-      @row = row
+      @shared_strings = document.shared_strings
+      @x = Cell.excel_column_letter x
+      @y = y
       if data.is_a?(::Hash)
         data = data.symbolize_keys
         @value = data[:value]
@@ -190,22 +195,12 @@ class XlsxWriter
 
     def to_xml
       if value.nil? or (value.is_a?(String) and value.empty?) or (value == false and document.quiet_booleans?)
-        %{<c r="#{excel_column_letter}#{row.ndx}" s="0" t="s" />}
+        %{<c r="#{x}#{y}" s="0" t="s" />}
       elsif excel_type == :string
-        unless document.shared_strings.has_key?(value)
-          document.shared_strings[value] = document.shared_strings.count
-        end
-
-        string_index = document.shared_strings[value]
-        %{<c r="#{excel_column_letter}#{row.ndx}" s="#{excel_style_number}" t="s"><v>#{string_index}</v></c>}
+        %{<c r="#{x}#{y}" s="#{excel_style_number}" t="s"><v>#{shared_strings.ndx(value)}</v></c>}
       else
-        %{<c r="#{excel_column_letter}#{row.ndx}" s="#{excel_style_number}" t="#{excel_type}"><v>#{excel_value}</v></c>}
+        %{<c r="#{x}#{y}" s="#{excel_style_number}" t="#{excel_type}"><v>#{excel_value}</v></c>}
       end
-    end
-
-    # 0 -> A (zero based!)
-    def excel_column_letter
-      Cell.excel_column_letter row.cells.index(self)
     end
   end
 end

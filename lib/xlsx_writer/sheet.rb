@@ -84,9 +84,8 @@ EOS
         end
         File.unlink rows_tmp_file_path
         converted = UnixUtils.unix2dos path
-        ::FileUtils.mv converted, path
+        FileUtils.mv converted, path
         SheetRels.new(document, self).generate
-        @generated = true
       end
     end
     

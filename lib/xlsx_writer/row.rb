@@ -2,20 +2,20 @@ class XlsxWriter
   class Row
     attr_reader :sheet
     attr_reader :cells
-    attr_reader :ndx
-    attr_reader :width
+    attr_reader :y
     
-    def initialize(sheet, cells, ndx)
+    def initialize(sheet, raw_cells, y)
       @sheet = sheet
-      @ndx = ndx
-      @cells = cells.map do |cell|
-        Cell.new self, cell
+      @y = y
+      @cells = []
+      raw_cells.each_with_index do |cell, x|
+        @cells << Cell.new(self, cell, x, y)
       end
     end
     
     def to_xml
       ary = []
-      ary << %{<row r="#{ndx}">}
+      ary << %{<row r="#{y}">}
       cells.each do |cell|
         ary << cell.to_xml
       end

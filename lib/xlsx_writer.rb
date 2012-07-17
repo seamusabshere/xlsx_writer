@@ -9,11 +9,12 @@ require 'xlsx_writer/header_footer'
 require 'xlsx_writer/autofilter'
 require 'xlsx_writer/page_setup'
 require 'xlsx_writer/sheet'
+require 'xlsx_writer/shared_strings'
+
 require 'xlsx_writer/xml'
 # manual
 require 'xlsx_writer/xml/sheet_rels'
 require 'xlsx_writer/xml/image'
-require 'xlsx_writer/xml/shared_strings'
 # automatic
 require 'xlsx_writer/xml/app'
 require 'xlsx_writer/xml/content_types'
@@ -42,7 +43,7 @@ class XlsxWriter
     @images = []
     @page_setup = PageSetup.new
     @header_footer = HeaderFooter.new
-    @shared_strings = {}#SharedStrings.new(self)
+    @shared_strings = SharedStrings.new self
   end
 
   # Instead of TRUE or FALSE, show TRUE and blank if false
@@ -76,7 +77,7 @@ class XlsxWriter
       @path ||= begin
         sheets.each { |sheet| sheet.generate }
         images.each { |image| image.generate }
-        # shared_strings.generate
+        shared_strings.generate
         Xml.auto.each { |part| part.new(self).generate }
         with_zip_extname = UnixUtils.zip staging_dir
         with_xlsx_extname = with_zip_extname.sub(/.zip$/, '.xlsx')
