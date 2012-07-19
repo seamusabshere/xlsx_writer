@@ -99,6 +99,32 @@ describe XlsxWriter do
     end
   end
 
+  describe "numeric types" do
+    before do
+      @reference = {
+        # 'Integer' => [1, '1'], - remote_table always converts to 1.0
+        'Float' => [1.2345, '1.2345'],
+        'Decimal' => [Decimal('6.789'), '6.789'],
+        'BigDecimal' => [::BigDecimal.new(9.876, 4), '9.876'],
+        'Rational' => [Rational(2, 3), '0.6666'],
+      }
+      @doc = XlsxWriter::Document.new
+      @sheet1 = @doc.add_sheet("Numbers")
+      @reference.each do |k, v|
+        @sheet1.add_row([k, v.first])
+      end
+    end
+    after do
+      @doc.try :cleanup
+    end
+    it "renders different numeric types into plain decimals" do
+      t = RemoteTable.new(@doc.path, :format => :xlsx, :headers => %w{ type number })
+      t.each do |row|
+        row['number'].to_s.first(6).must_equal @reference[row['type']].last, "for #{row['type']}"
+      end
+    end
+  end
+
   describe "example with autofilter, header image, and footer text" do
     before do
       @doc = XlsxWriter::Document.new

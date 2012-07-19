@@ -6,6 +6,10 @@ unreleased
   * Write rows and shared strings directly to disk to minimize memory usage
   * Simplify syntax: XlsxWriter.new instead of XlsxWriter::Document.new
 
+* Bug fixes
+
+  * Render BigDecimal and Rational as decimal
+
 0.3.2 / 2012-07-12
 
 * Bug fixes

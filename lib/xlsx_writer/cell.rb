@@ -30,7 +30,7 @@ class XlsxWriter
           :String
         when :Fixnum
           :Integer
-        when :BigDecimal, :Float
+        when :Float, :Rational, :BigDecimal
           :Decimal
         when :TrueClass, :FalseClass
           :Boolean
@@ -91,8 +91,17 @@ class XlsxWriter
           type = Cell.type(value)
         end
         case type
-        when :Integer, :Decimal, :Currency
+        when :Integer
           value.to_s
+        when :Decimal, :Currency
+          case value
+          when BIG_DECIMAL
+            value.to_s('F')
+          when Rational
+            value.to_f.to_s
+          else
+            value.to_s
+          end
         when :Date
           # doesn't work for DateTimes or Times yet
           if value.is_a?(String)
@@ -132,6 +141,7 @@ class XlsxWriter
     BOOLEAN_LENGTH = 'FALSE'.length + 1
     JAN_1_1900 = Time.parse('1899-12-30 00:00:00 UTC')
     TRUE_FALSE_PATTERN = %r{^true|false$}i
+    BIG_DECIMAL = defined?(BigDecimal) ? BigDecimal : Struct.new
 
     STYLE_NUMBER = {
       :String     => 0,
