@@ -1,4 +1,4 @@
-module XlsxWriter
+class XlsxWriter
   class Autofilter < ::Struct.new(:sheet, :range)
     def to_xml
       %{<autoFilter ref="#{range}" />}

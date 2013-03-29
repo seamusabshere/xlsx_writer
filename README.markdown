@@ -33,7 +33,7 @@ Features not present in simple_xlsx_writer:
 
     require 'xlsx_writer'
     
-    doc = XlsxWriter::Document.new
+    doc = XlsxWriter.new
 
     # show TRUE for true but a blank cell instead of FALSE
     doc.quiet_booleans!

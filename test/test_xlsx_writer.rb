@@ -12,7 +12,7 @@ describe XlsxWriter do
       @sheet1.add_row(['negative', false])
     end
     after do
-      @doc.cleanup
+      @doc.try :cleanup
     end
     it "returns a path to an xlsx" do
       File.exist?(@doc.path).must_equal true
@@ -51,25 +51,26 @@ describe XlsxWriter do
   end
 
   describe "quiet booleans" do
-    before do
-      @doc = XlsxWriter::Document.new
-      @sheet1 = @doc.add_sheet("QuietBooleans")
-      @sheet1.add_row(['affirmative', 'negative'])
-      @sheet1.add_row([true, false])
-    end
-    after do
-      @doc.cleanup
-    end
     it "shows TRUE or FALSE for booleans by default" do
-      t = RemoteTable.new(@doc.path, :format => :xlsx)
+      doc = XlsxWriter::Document.new
+      sheet1 = doc.add_sheet("QuietBooleans")
+      sheet1.add_row(['affirmative', 'negative'])
+      sheet1.add_row([true, false])
+      t = RemoteTable.new(doc.path, :format => :xlsx)
       t[0]['affirmative'].must_equal 'TRUE'
       t[0]['negative'].must_equal 'FALSE'
+      doc.cleanup
     end
     it "shows TRUE or blank for false if quiet booleans is enabled" do
-      @doc.quiet_booleans!
-      t = RemoteTable.new(@doc.path, :format => :xlsx)
+      doc = XlsxWriter::Document.new
+      doc.quiet_booleans!
+      sheet1 = doc.add_sheet("QuietBooleans")
+      sheet1.add_row(['affirmative', 'negative'])
+      sheet1.add_row([true, false])
+      t = RemoteTable.new(doc.path, :format => :xlsx)
       t[0]['affirmative'].must_equal 'TRUE'
       t[0]['negative'].must_equal ''
+      doc.cleanup
     end
   end
 
@@ -81,7 +82,7 @@ describe XlsxWriter do
       @sheet1.add_row([3, 4])
     end
     after do
-      @doc.cleanup
+      @doc.try :cleanup
     end
     it "doesn't freeze by default" do
       dir = UnixUtils.unzip @doc.path
@@ -95,6 +96,32 @@ describe XlsxWriter do
       xml.must_include 'topLeftCell="A3"'
       xml.must_include 'ySplit="2"'
       FileUtils.rm_rf dir
+    end
+  end
+
+  describe "numeric types" do
+    before do
+      @reference = {
+        # 'Integer' => [1, '1'], - remote_table always converts to 1.0
+        'Float' => [1.2345, '1.2345'],
+        'Decimal' => [Decimal('6.789'), '6.789'],
+        'BigDecimal' => [::BigDecimal.new(9.876, 4), '9.876'],
+        'Rational' => [Rational(2, 3), '0.6666'],
+      }
+      @doc = XlsxWriter::Document.new
+      @sheet1 = @doc.add_sheet("Numbers")
+      @reference.each do |k, v|
+        @sheet1.add_row([k, v.first])
+      end
+    end
+    after do
+      @doc.try :cleanup
+    end
+    it "renders different numeric types into plain decimals" do
+      t = RemoteTable.new(@doc.path, :format => :xlsx, :headers => %w{ type number })
+      t.each do |row|
+        row['number'].to_s.first(6).must_equal @reference[row['type']].last, "for #{row['type']}"
+      end
     end
   end
 
@@ -129,8 +156,8 @@ describe XlsxWriter do
       @unzipped = UnixUtils.unzip @doc.path
     end
     after do
-      @doc.cleanup
-      FileUtils.rm_rf @unzipped
+      @doc.try :cleanup
+      FileUtils.rm_rf @unzipped if @unzipped
     end
     it "has an autofilter" do
       File.read("#{@unzipped}/xl/worksheets/sheet1.xml").must_include %{<autoFilter ref="A1:F1" />}

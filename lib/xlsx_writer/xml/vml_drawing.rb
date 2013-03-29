@@ -1,4 +1,4 @@
-module XlsxWriter
+class XlsxWriter
   class VmlDrawing < Xml
     def relative_path
       "xl/drawings/vmlDrawing1.vml"

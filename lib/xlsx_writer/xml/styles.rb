@@ -1,4 +1,4 @@
-module XlsxWriter
+class XlsxWriter
   class Styles < Xml
     def relative_path
       "xl/styles.xml"

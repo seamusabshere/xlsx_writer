@@ -1,3 +1,3 @@
-module XlsxWriter
-  VERSION = '0.3.1'
+class XlsxWriter
+  VERSION = '0.4.0'
 end

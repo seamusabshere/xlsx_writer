@@ -1,6 +1,6 @@
 require 'fileutils'
 
-module XlsxWriter
+class XlsxWriter
   class Image
     DEFAULT = {
       :croptop => 0,

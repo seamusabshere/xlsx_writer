@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'minitest-reporters'
   s.add_development_dependency 'yard'
   s.add_development_dependency 'remote_table'
+  s.add_development_dependency 'ruby-decimal'
   
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,features}/*`.split("\n")

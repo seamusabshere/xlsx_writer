@@ -1,3 +1,21 @@
+0.4.0 / 2012-07-19
+
+* Enhancements
+
+  * Use a shared string file! thanks to @ledbettj in https://github.com/seamusabshere/xlsx_writer/pull/3
+  * Write rows and shared strings directly to disk to minimize memory usage
+  * Simplify syntax: XlsxWriter.new instead of XlsxWriter::Document.new
+
+* Bug fixes
+
+  * Render BigDecimal and Rational as decimal
+
+0.3.2 / 2012-07-12
+
+* Bug fixes
+
+  * "Wrong date - Fixed 2 days missing because of Lotus 123 leap year bug and the way calculation is done" - thanks @igagnidz !
+
 0.3.1 / 2012-07-10
 
 * Enhancements

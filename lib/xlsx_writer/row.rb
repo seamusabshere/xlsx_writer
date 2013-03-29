@@ -1,36 +1,21 @@
-module XlsxWriter
+class XlsxWriter
   class Row
     attr_reader :sheet
     attr_reader :cells
-    attr_reader :width
+    attr_reader :y
     
-    def initialize(sheet, columns)
-      @width = {}
+    def initialize(sheet, raw_cells, y)
       @sheet = sheet
-      @cells = columns.map do |column|
-        Cell.new self, column
-      end
-    end
-    
-    def ndx
-      sheet.rows.index(self) + 1
-    end
-    
-    def length
-      cells.length
-    end
-    
-    def cell_width(x)
-      @width[x] ||= if (cell = cells[x])
-        cell.pixel_width
-      else
-        0
+      @y = y
+      @cells = []
+      raw_cells.each_with_index do |cell, x|
+        @cells << Cell.new(self, cell, x, y)
       end
     end
     
     def to_xml
       ary = []
-      ary << %{<row r="#{ndx}">}
+      ary << %{<row r="#{y}">}
       cells.each do |cell|
         ary << cell.to_xml
       end

@@ -1,4 +1,4 @@
-module XlsxWriter
+class XlsxWriter
   class SheetRels < Xml
 
     AUTO = false
