@@ -110,7 +110,7 @@ class XlsxWriter
             (value.to_date - JAN_1_1900.to_date).to_i
           end
         when :Boolean
-          value ? 1 : 0
+          value.to_s.downcase == 'true' ? 1 : 0
         else
           value.fast_xs
         end
