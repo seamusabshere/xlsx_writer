@@ -2,6 +2,7 @@
 
 * Bug fixes
 
+  * Don't treat "false" (String) as true in a boolean column thanks @igagnidz in https://github.com/seamusabshere/xlsx_writer/pull/4
   * Now you should be able to scroll the bottom pane (below the autofilters)
 
 0.4.0 / 2012-07-19
