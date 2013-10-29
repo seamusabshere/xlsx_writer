@@ -59,7 +59,7 @@ EOS
             f.write <<-EOS
 <sheetViews>
   <sheetView workbookViewId="0">
-    <pane ySplit="#{y_split}" topLeftCell="#{freeze_top_left}" activePane="topLeft" state="frozen"/>
+    <pane ySplit="#{y_split}" topLeftCell="#{freeze_top_left}" activePane="bottomLeft" state="frozen"/>
   </sheetView>
 </sheetViews>
 EOS
