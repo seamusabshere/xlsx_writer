@@ -10,6 +10,7 @@ describe XlsxWriter do
       @sheet1.add_row(['hello', 'world'])
       @sheet1.add_row(['affirmative', true])
       @sheet1.add_row(['negative', false])
+      @sheet1.add_row(['symbol', :Symbol])
     end
     after do
       @doc.try :cleanup
@@ -132,7 +133,7 @@ describe XlsxWriter do
       # DATA
       sheet1.add_row(%w{DoB Name Occupation Number Integer Float})
       sheet1.add_row([
-        Date.parse("July 31, 1912"), 
+        Date.parse("July 31, 1912"),
         "Milton Friedman",
         "Economist / Statistician",
         {:type => :Currency, :value => 99_000_000},
