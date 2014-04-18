@@ -26,7 +26,7 @@ class XlsxWriter
           value.class.name.to_sym
         end
         case hint
-        when :NilClass
+        when :NilClass, :Symbol
           :String
         when :Fixnum
           :Integer
@@ -51,7 +51,7 @@ class XlsxWriter
       def type_name(type)
         TYPE_NAME[type] or raise "Don't know type name for #{type.inspect}. Must be #{TYPE_NAME.keys.map(&:inspect).join(', ')}."
       end
-      
+
       # width = Truncate([{Number of Characters} * {Maximum Digit Width} + {5 pixel padding}]/{Maximum Digit Width}*256)/256
       # Using the Calibri font as an example, the maximum digit width of 11 point font size is 7 pixels (at 96 dpi). In fact, each digit is the same width for this font. Therefore if the cell width is 8 characters wide, the value of this attribute shall be Truncate([8*7+5]/7*256)/256 = 8.7109375.
       def pixel_width(value, type = nil)
@@ -205,7 +205,7 @@ class XlsxWriter
     def escaped_value
       @escaped_value ||= begin
         if type == :String
-          row.sheet.document.shared_strings.ndx value
+          row.sheet.document.shared_strings.ndx value.to_s
         else
           Cell.escape value
         end
