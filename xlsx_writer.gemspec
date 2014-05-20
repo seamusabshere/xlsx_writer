@@ -9,6 +9,7 @@ Gem::Specification.new do |s|
   s.homepage    = "https://github.com/seamusabshere/xlsx_writer"
   s.summary     = %{Writes XLSX files. Minimal XML and style. Supports autofilters and headers/footers with images and page numbers.}
   s.description = %{Writes XLSX files. Minimal XML and style. Supports autofilters and headers/footers with images and page numbers.}
+  s.license = 'MIT'
   
   s.add_runtime_dependency 'activesupport'
   s.add_runtime_dependency 'fast_xs'

@@ -93,4 +93,4 @@ We use `xlsx_writer` for [marketing analytics at Faraday](http://faraday.io).
 
 ## Copyright
 
-Copyright (c) 2012 Dee Zsombor, Justin Beck, Seamus Abshere. See LICENSE for details.
+Copyright (c) 2014 Dee Zsombor, Justin Beck, Seamus Abshere. See LICENSE for details.
