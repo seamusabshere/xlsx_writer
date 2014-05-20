@@ -18,7 +18,7 @@ class XlsxWriter
     end
 
     def relative_path
-      'xl/sharedstrings.xml'
+      'xl/sharedStrings.xml'
     end
 
     def ndx(str)
