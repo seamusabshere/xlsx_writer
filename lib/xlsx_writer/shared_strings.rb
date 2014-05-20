@@ -1,4 +1,4 @@
-require 'digest/md5'
+require 'murmurhash3'
 
 class XlsxWriter
   class SharedStrings
@@ -23,7 +23,7 @@ class XlsxWriter
 
     def ndx(str)
       @mutex.synchronize do
-        digest = Digest::MD5.digest str
+        digest = MurmurHash3::V128.str_digest str
         unless ndx = indexes[digest]
           ndx = indexes.length
           indexes[digest] = ndx
