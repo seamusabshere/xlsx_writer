@@ -2,9 +2,15 @@
 
 Writes (doesn't read or modify) XLSX files.
 
+Imposes (non-customizable) a certain style: Arial 10pt, left-aligned text and dates, right-aligned numbers and currency
+
+Optionally adds an autofilter.
+
 ## Credit
 
 Based on the [original simple\_xlsx\_writer gem](https://github.com/harvesthq/simple_xlsx_writer) and [patches by mumboe](https://github.com/mumboe/simple_xlsx_writer)
+
+## Changes from simple_xlsx_writer (caution opinionated)
 
 Then I tore it down and rebuilt it:
 
