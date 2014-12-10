@@ -97,9 +97,13 @@ EOS
     def rid
       "rId#{ndx + 1}"
     end
+
+    def filename
+      "sheet#{ndx}.xml"
+    end
     
     def relative_path
-      "xl/worksheets/sheet#{ndx}.xml"
+      "xl/worksheets/#{filename}"
     end
     
     def absolute_path
